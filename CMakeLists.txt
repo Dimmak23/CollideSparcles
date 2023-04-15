@@ -68,6 +68,17 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(SDL2)
 
+FetchContent_Declare(
+	SDL2_image
+	# URL "https://www.libsdl.org/projects/SDL_image/release/SDL2_image-2.6.3.tar.gz" # replace x.x.x with the version you want to download
+	GIT_REPOSITORY https://github.com/libsdl-org/SDL_image.git
+	# GIT_REPOSITORY git@github.com/libsdl-org/SDL_image.git
+	# GIT_TAG        release-2.6.x # replace with the version you want to use
+	GIT_TAG       SDL2
+)
+
+FetchContent_MakeAvailable(SDL2_image)
+
 # create executable
 add_executable(
 	render_test
@@ -76,45 +87,39 @@ add_executable(
 	# ${INCLUDES}/header_02.cpp
 	# ${INCLUDES}/header_03.cpp
 )
-
+	
 # Specify where target binary will be saved
 set_target_properties(
-    render_test
-    PROPERTIES
+	render_test
+	PROPERTIES
 	if(DEBUG)
-    RUNTIME_OUTPUT_DIRECTORY "../executables/DEBUG/render_test"
-    LIBRARY_OUTPUT_DIRECTORY "../executables/DEBUG/render_test"				# Dynamic libraries
-    ARCHIVE_OUTPUT_DIRECTORY "../executables/DEBUG/render_test/static_libs" 	# Static libraries
+		RUNTIME_OUTPUT_DIRECTORY "../executables/DEBUG/render_test"
+		LIBRARY_OUTPUT_DIRECTORY "../executables/DEBUG/render_test"				# Dynamic libraries
+		ARCHIVE_OUTPUT_DIRECTORY "../executables/DEBUG/render_test/static_libs" 	# Static libraries
 	else()
-    RUNTIME_OUTPUT_DIRECTORY "../executables/RELEASE/render_test"
-    LIBRARY_OUTPUT_DIRECTORY "../executables/RELEASE/render_test"				# Dynamic libraries
-    ARCHIVE_OUTPUT_DIRECTORY "../executables/RELEASE/render_test/static_libs" 	# Static libraries
+		RUNTIME_OUTPUT_DIRECTORY "../executables/RELEASE/render_test"
+		LIBRARY_OUTPUT_DIRECTORY "../executables/RELEASE/render_test"				# Dynamic libraries
+		ARCHIVE_OUTPUT_DIRECTORY "../executables/RELEASE/render_test/static_libs" 	# Static libraries
 	endif()
 )
-
-# do we need to include linked directories?
-# target_include_directories(
-# 	render_test
-# 	PUBLIC ${INCLUDES}
-# 	PUBLIC ${LIBRARIES}
-# )
 
 # linking all necessary lins
 target_link_libraries(
 	render_test
 	PRIVATE SDL2::SDL2
+	PRIVATE SDL2_image::SDL2_image
 	# PRIVATE searchBroken
 )
 
 if(CMAKE_BUILD_TYPE MATCHES "Debug")
-	# if(NOT EXISTS ../executables/DEBUG/render_test/assets/)
+	if(NOT EXISTS ../executables/DEBUG/render_test/assets/)
 		add_custom_command(
 			TARGET render_test POST_BUILD
 			COMMAND ${CMAKE_COMMAND} -E copy_directory
 			${CMAKE_SOURCE_DIR}/assets
 			$<TARGET_FILE_DIR:render_test>/assets
 		)
-	# endif()
+	endif()
 
 else()
 

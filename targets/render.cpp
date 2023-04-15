@@ -88,13 +88,15 @@ int main(int argc, char* argv[])
 			}
 		}
 
+		// Updates
+
 		// Game logic and rendering...
 		application->renderScreen();
 	}
 
-	SDL_Quit();
-
 	delete application;
+
+	SDL_Quit();
 
 	return 0;
 };

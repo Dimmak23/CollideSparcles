@@ -62,8 +62,10 @@ int main(/*char* argc, char** argv*/)
 	// std::endl;
 
 	surface = IMG_Load("assets/light-no-back.png");
+	// SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, 255, 255, 255));
 	image = SDL_CreateTextureFromSurface(renderer, surface);
 	SDL_FreeSurface(surface);
+	std::cout << "change apha mode: " << SDL_SetTextureAlphaMod(image, 10) << std::endl;
 	// draw image in main display as reference to compare with further renderings
 	SDL_RenderCopy(renderer, image, NULL, &dst);
 

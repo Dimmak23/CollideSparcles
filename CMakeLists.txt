@@ -120,6 +120,14 @@ add_executable(
 	# ${INCLUDES}/header_03.cpp
 )
 
+add_executable(
+	sparkle
+	targets/sparkle.cpp
+	# ${INCLUDES}/header_01.cpp
+	# ${INCLUDES}/header_02.cpp
+	# ${INCLUDES}/header_03.cpp
+)
+
 # Specify where target binary will be saved
 set_target_properties(
 	render_test
@@ -191,6 +199,20 @@ set_target_properties(
 	endif()
 )
 
+set_target_properties(
+	sparkle
+	PROPERTIES
+	if(DEBUG)
+		RUNTIME_OUTPUT_DIRECTORY "../executables/DEBUG/sparkle"
+		LIBRARY_OUTPUT_DIRECTORY "../executables/DEBUG/sparkle"				# Dynamic libraries
+		ARCHIVE_OUTPUT_DIRECTORY "../executables/DEBUG/sparkle/static_libs" 	# Static libraries
+	else()
+		RUNTIME_OUTPUT_DIRECTORY "../executables/RELEASE/sparkle"
+		LIBRARY_OUTPUT_DIRECTORY "../executables/RELEASE/sparkle"				# Dynamic libraries
+		ARCHIVE_OUTPUT_DIRECTORY "../executables/RELEASE/sparkle/static_libs" 	# Static libraries
+	endif()
+)
+
 # linking all necessary lins
 target_link_libraries(
 	render_test
@@ -227,6 +249,13 @@ target_link_libraries(
 	# PRIVATE searchBroken
 )
 
+target_link_libraries(
+	sparkle
+	PRIVATE SDL2::SDL2
+	PRIVATE SDL2_image::SDL2_image
+	# PRIVATE searchBroken
+)
+
 if(CMAKE_BUILD_TYPE MATCHES "Debug")
 	if(NOT EXISTS ../executables/DEBUG/render_test/assets/)
 		add_custom_command(
@@ -258,6 +287,12 @@ if(CMAKE_BUILD_TYPE MATCHES "Debug")
 			COMMAND ${CMAKE_COMMAND} -E copy_directory
 			${CMAKE_SOURCE_DIR}/assets
 			$<TARGET_FILE_DIR:four_tiles>/assets
+		)
+		add_custom_command(
+			TARGET sparkle POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy_directory
+			${CMAKE_SOURCE_DIR}/assets
+			$<TARGET_FILE_DIR:sparkle>/assets
 		)
 	endif()
 

@@ -1,0 +1,1 @@
+cmake --build build --target sparkle -j 8

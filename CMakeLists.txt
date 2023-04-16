@@ -87,7 +87,39 @@ add_executable(
 	# ${INCLUDES}/header_02.cpp
 	# ${INCLUDES}/header_03.cpp
 )
+
+add_executable(
+	transparent
+	targets/transparent.cpp
+	# ${INCLUDES}/header_01.cpp
+	# ${INCLUDES}/header_02.cpp
+	# ${INCLUDES}/header_03.cpp
+)
 	
+add_executable(
+	full_tr
+	targets/full_tr.cpp
+	# ${INCLUDES}/header_01.cpp
+	# ${INCLUDES}/header_02.cpp
+	# ${INCLUDES}/header_03.cpp
+)
+
+add_executable(
+	back_tr
+	targets/back_tr.cpp
+	# ${INCLUDES}/header_01.cpp
+	# ${INCLUDES}/header_02.cpp
+	# ${INCLUDES}/header_03.cpp
+)
+
+add_executable(
+	four_tiles
+	targets/four_tiles.cpp
+	# ${INCLUDES}/header_01.cpp
+	# ${INCLUDES}/header_02.cpp
+	# ${INCLUDES}/header_03.cpp
+)
+
 # Specify where target binary will be saved
 set_target_properties(
 	render_test
@@ -103,9 +135,93 @@ set_target_properties(
 	endif()
 )
 
+set_target_properties(
+	transparent
+	PROPERTIES
+	if(DEBUG)
+		RUNTIME_OUTPUT_DIRECTORY "../executables/DEBUG/transparent"
+		LIBRARY_OUTPUT_DIRECTORY "../executables/DEBUG/transparent"				# Dynamic libraries
+		ARCHIVE_OUTPUT_DIRECTORY "../executables/DEBUG/transparent/static_libs" 	# Static libraries
+	else()
+		RUNTIME_OUTPUT_DIRECTORY "../executables/RELEASE/transparent"
+		LIBRARY_OUTPUT_DIRECTORY "../executables/RELEASE/transparent"				# Dynamic libraries
+		ARCHIVE_OUTPUT_DIRECTORY "../executables/RELEASE/transparent/static_libs" 	# Static libraries
+	endif()
+)
+
+set_target_properties(
+	full_tr
+	PROPERTIES
+	if(DEBUG)
+		RUNTIME_OUTPUT_DIRECTORY "../executables/DEBUG/full_tr"
+		LIBRARY_OUTPUT_DIRECTORY "../executables/DEBUG/full_tr"				# Dynamic libraries
+		ARCHIVE_OUTPUT_DIRECTORY "../executables/DEBUG/full_tr/static_libs" 	# Static libraries
+	else()
+		RUNTIME_OUTPUT_DIRECTORY "../executables/RELEASE/full_tr"
+		LIBRARY_OUTPUT_DIRECTORY "../executables/RELEASE/full_tr"				# Dynamic libraries
+		ARCHIVE_OUTPUT_DIRECTORY "../executables/RELEASE/full_tr/static_libs" 	# Static libraries
+	endif()
+)
+
+set_target_properties(
+	back_tr
+	PROPERTIES
+	if(DEBUG)
+		RUNTIME_OUTPUT_DIRECTORY "../executables/DEBUG/back_tr"
+		LIBRARY_OUTPUT_DIRECTORY "../executables/DEBUG/back_tr"				# Dynamic libraries
+		ARCHIVE_OUTPUT_DIRECTORY "../executables/DEBUG/back_tr/static_libs" 	# Static libraries
+	else()
+		RUNTIME_OUTPUT_DIRECTORY "../executables/RELEASE/back_tr"
+		LIBRARY_OUTPUT_DIRECTORY "../executables/RELEASE/back_tr"				# Dynamic libraries
+		ARCHIVE_OUTPUT_DIRECTORY "../executables/RELEASE/back_tr/static_libs" 	# Static libraries
+	endif()
+)
+
+set_target_properties(
+	four_tiles
+	PROPERTIES
+	if(DEBUG)
+		RUNTIME_OUTPUT_DIRECTORY "../executables/DEBUG/four_tiles"
+		LIBRARY_OUTPUT_DIRECTORY "../executables/DEBUG/four_tiles"				# Dynamic libraries
+		ARCHIVE_OUTPUT_DIRECTORY "../executables/DEBUG/four_tiles/static_libs" 	# Static libraries
+	else()
+		RUNTIME_OUTPUT_DIRECTORY "../executables/RELEASE/four_tiles"
+		LIBRARY_OUTPUT_DIRECTORY "../executables/RELEASE/four_tiles"				# Dynamic libraries
+		ARCHIVE_OUTPUT_DIRECTORY "../executables/RELEASE/four_tiles/static_libs" 	# Static libraries
+	endif()
+)
+
 # linking all necessary lins
 target_link_libraries(
 	render_test
+	PRIVATE SDL2::SDL2
+	PRIVATE SDL2_image::SDL2_image
+	# PRIVATE searchBroken
+)
+
+target_link_libraries(
+	transparent
+	PRIVATE SDL2::SDL2
+	PRIVATE SDL2_image::SDL2_image
+	# PRIVATE searchBroken
+)
+
+target_link_libraries(
+	full_tr
+	PRIVATE SDL2::SDL2
+	PRIVATE SDL2_image::SDL2_image
+	# PRIVATE searchBroken
+)
+
+target_link_libraries(
+	back_tr
+	PRIVATE SDL2::SDL2
+	PRIVATE SDL2_image::SDL2_image
+	# PRIVATE searchBroken
+)
+
+target_link_libraries(
+	four_tiles
 	PRIVATE SDL2::SDL2
 	PRIVATE SDL2_image::SDL2_image
 	# PRIVATE searchBroken
@@ -118,6 +234,30 @@ if(CMAKE_BUILD_TYPE MATCHES "Debug")
 			COMMAND ${CMAKE_COMMAND} -E copy_directory
 			${CMAKE_SOURCE_DIR}/assets
 			$<TARGET_FILE_DIR:render_test>/assets
+		)
+		add_custom_command(
+			TARGET transparent POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy_directory
+			${CMAKE_SOURCE_DIR}/assets
+			$<TARGET_FILE_DIR:transparent>/assets
+		)
+		add_custom_command(
+			TARGET full_tr POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy_directory
+			${CMAKE_SOURCE_DIR}/assets
+			$<TARGET_FILE_DIR:full_tr>/assets
+		)
+		add_custom_command(
+			TARGET back_tr POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy_directory
+			${CMAKE_SOURCE_DIR}/assets
+			$<TARGET_FILE_DIR:back_tr>/assets
+		)
+		add_custom_command(
+			TARGET four_tiles POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy_directory
+			${CMAKE_SOURCE_DIR}/assets
+			$<TARGET_FILE_DIR:four_tiles>/assets
 		)
 	endif()
 

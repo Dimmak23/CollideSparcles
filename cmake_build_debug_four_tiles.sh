@@ -1,0 +1,1 @@
+cmake --build build --target four_tiles -j 8

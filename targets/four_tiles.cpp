@@ -57,10 +57,11 @@ int main(/*char* argc, char** argv*/)
 	// SDL_Rect srcRect{ 0, 0, 1600, 400 };
 	// SDL_Rect backRect{ 0, 0, 1600, 400 };
 	// SDL_RenderCopy(renderer, background, &srcRect, &backRect);
+	SDL_RenderCopy(renderer, background, nullptr, nullptr);
 	// std::cout << "rendering background is: " << SDL_RenderCopy(renderer, background, nullptr, &backRect) <<
 	// std::endl;
 
-	surface = IMG_Load("assets/light.png");
+	surface = IMG_Load("assets/light-no-back.png");
 	image = SDL_CreateTextureFromSurface(renderer, surface);
 	SDL_FreeSurface(surface);
 	// draw image in main display as reference to compare with further renderings
@@ -68,12 +69,14 @@ int main(/*char* argc, char** argv*/)
 
 	// Secondly, the image is rendered in a fully opaque intermediate texture.
 	SDL_Texture* texture = renderImageInATexture(image, SOLID);
+	std::cout << "blend texture: " << SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND) << std::endl;
 	// render intermediate texture in main display
 	SDL_Rect dstTexture = { 400, 0, 400, 400 };
 	SDL_RenderCopy(renderer, texture, NULL, &dstTexture);
 
 	// Third, the image is rendered in a half transparent texture.
 	SDL_Texture* texture2 = renderImageInATexture(image, HALF_TRANSPARENT);
+	std::cout << "blend texture2: " << SDL_SetTextureBlendMode(texture2, SDL_BLENDMODE_BLEND) << std::endl;
 	// render intermediate texture2 in main display
 	SDL_Rect dstTexture2 = { 800, 0, 400, 400 };
 	SDL_RenderCopy(renderer, texture2, NULL, &dstTexture2);
@@ -81,6 +84,7 @@ int main(/*char* argc, char** argv*/)
 	// Fourth, the image is rendered in a fully trasnparent texture, expecting the
 	// exact same result as first rendering.
 	SDL_Texture* texture3 = renderImageInATexture(image, TRANSPARENT);
+	std::cout << "blend texture3: " << SDL_SetTextureBlendMode(texture3, SDL_BLENDMODE_BLEND) << std::endl;
 	// render intermediate texture3 in main display
 	SDL_Rect dstTexture3 = { 1200, 0, 400, 400 };
 	SDL_RenderCopy(renderer, texture3, NULL, &dstTexture3);

@@ -3,6 +3,14 @@
 
 #include <iostream>
 
+enum CORNER
+{
+	LEFT_UP = 0,
+	RIGHT_UP,
+	LEFT_BOTTOM,
+	RIGHT_BOTTOM
+};
+
 int main(/*int argc, char const *argv[]*/)
 {
 	int callingStatus{};
@@ -27,8 +35,8 @@ int main(/*int argc, char const *argv[]*/)
 	SDL_Rect windowR;
 	windowR.x = 10;
 	windowR.y = 10;
-	windowR.w = 1200;
-	windowR.h = 600;
+	windowR.w = 900;
+	windowR.h = 900;
 
 	// Create the main window
 	SDL_Window* window = nullptr;
@@ -102,16 +110,29 @@ int main(/*int argc, char const *argv[]*/)
 	SDL_FreeSurface(lighterS);
 
 	// Lighter parameters
+
+	SDL_Rect lighterTrajectory;	   // trajectory of the center of the lighter
+	lighterTrajectory.x = 60;
+	lighterTrajectory.y = 54;
+	lighterTrajectory.w = windowR.w - 2 * lighterTrajectory.x;
+	lighterTrajectory.h = windowR.h - 2 * lighterTrajectory.y;
+
 	SDL_Rect lighterR;
-	lighterR.x = 10;
-	lighterR.y = 10;
-	lighterR.w = 400;
-	lighterR.h = 353;
+	lighterR.w = 100;
+	lighterR.h = 88;
+	lighterR.x = lighterTrajectory.x - lighterR.w / 2;
+	lighterR.y = lighterTrajectory.y - lighterR.h / 2;
+
+	SDL_Rect arenaBorder;	 // border of the arena
+	arenaBorder.x = lighterR.x;
+	arenaBorder.y = lighterR.y;
+	arenaBorder.w = lighterTrajectory.w + lighterR.w;
+	arenaBorder.h = lighterTrajectory.h + lighterR.h;
 
 	unsigned char opacity{ 255 };
 	int sign{ -1 };
 
-	std::cout << "change alpha mode: " << SDL_SetTextureAlphaMod(lighterT, opacity) << std::endl;
+	// std::cout << "change alpha mode: " << SDL_SetTextureAlphaMod(lighterT, opacity) << std::endl;
 	// draw image in main display as reference to compare with further renderings
 	callingStatus = SDL_RenderCopy(renderer, lighterT, nullptr, &lighterR);
 
@@ -123,30 +144,110 @@ int main(/*int argc, char const *argv[]*/)
 
 	bool running{ true };
 
+	short deltaX{ 1 };
+	short deltaY{};
+
+	double rotationAngle{ 0.0 };
+
+	bool firstTimeEnter{ true };
+
+	SDL_Point lighterC = { lighterR.w / 2, lighterR.h / 2 };
+
 	while (running)
 	{
 		SDL_RenderClear(renderer);
 
+		// draw background
 		callingStatus = SDL_RenderCopy(renderer, backgroundT, &backgroundCrop, nullptr);
 
-		if (opacity < 20)
+		// draw arena
+		callingStatus = SDL_SetRenderDrawColor(renderer, 34, 124, 200, SDL_ALPHA_OPAQUE);
+		callingStatus = SDL_RenderDrawRect(renderer,	   //
+										   &arenaBorder	   //
+		);
+
+		// Changing opacity
+		if (opacity < 2)
 		{
 			sign *= -1;
-			opacity = 19;
+			opacity = 1;
 		}
 		else if (opacity > 254)
 		{
 			sign *= -1;
 			opacity = 255;
 		}
-
 		std::cout << "change alpha mode: " << SDL_SetTextureAlphaMod(lighterT, opacity) << std::endl;
+
+		// Changing position
+		lighterR.x += deltaX;
+		lighterR.y += deltaY;
+
+		if ((lighterR.x + lighterR.w / 2) > (lighterTrajectory.x + lighterTrajectory.w))
+		{
+			lighterR.x = lighterTrajectory.x + lighterTrajectory.w - lighterR.w / 2;
+			deltaX = 0;
+			deltaY = 1;
+
+			firstTimeEnter = true;
+		}
+		else if ((lighterR.y + lighterR.h / 2) > (lighterTrajectory.y + lighterTrajectory.h))
+		{
+			lighterR.y = lighterTrajectory.y + lighterTrajectory.h - lighterR.h / 2;
+			deltaX = -1;
+			deltaY = 0;
+		}
+		else if ((lighterR.x + lighterR.w / 2) < lighterTrajectory.x)
+		{
+			lighterR.x = lighterTrajectory.x - lighterR.w / 2;
+			deltaX = 0;
+			deltaY = -1;
+		}
+		else if ((lighterR.y + lighterR.h / 2) < lighterTrajectory.y)
+		{
+			lighterR.y = lighterTrajectory.y - lighterR.h / 2;
+			deltaX = 1;
+			deltaY = 0;
+
+			if (firstTimeEnter)
+			{
+				lighterTrajectory.x += 10;
+				lighterTrajectory.y += 10;
+				lighterTrajectory.w = lighterTrajectory.w - 20;
+				lighterTrajectory.h = lighterTrajectory.h - 20;
+
+				arenaBorder.x += 10;
+				arenaBorder.y += 10;
+				arenaBorder.w = arenaBorder.w - 20;
+				arenaBorder.h = arenaBorder.h - 20;
+
+				firstTimeEnter = false;
+			}
+		}
 
 		opacity = static_cast<unsigned char>(opacity + sign);
 
 		std::cout << "opacity: " << (int)opacity << ", sign: " << sign << std::endl;
+
+		std::cout << "position x: " << lighterR.x + lighterR.w / 2 << std::endl;
+		std::cout << "position y: " << lighterR.y + lighterR.h / 2 << std::endl;
+
 		// draw image in main display as reference to compare with further renderings
-		callingStatus = SDL_RenderCopy(renderer, lighterT, nullptr, &lighterR);
+		// callingStatus = SDL_RenderCopy(renderer, lighterT, nullptr, &lighterR);
+		// rotate texture
+		// lighterC.x = lighterR.x + lighterR.w / 2;
+		// lighterC.y = lighterR.y + lighterR.h / 2;
+
+		callingStatus = SDL_RenderCopyEx(renderer,				//
+										 lighterT,				//
+										 nullptr, &lighterR,	//
+										 rotationAngle,			//
+										 &lighterC,				//
+										 SDL_FLIP_NONE			//
+		);
+
+		rotationAngle += 2;
+		if (rotationAngle > 360.0) rotationAngle = 0.0;
 
 		// Show everything that was rendered
 		SDL_RenderPresent(renderer);

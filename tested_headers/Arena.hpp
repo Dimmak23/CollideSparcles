@@ -12,40 +12,47 @@
 
 #endif
 
+#include "Wheel.hpp"
 #include "WheelUtils.hpp"
 
 class Arena
 {
-	public:
-		Arena(SDL_Renderer* parent, unsigned int width, unsigned int height);
-		~Arena();
+public:
+	Arena(SDL_Renderer* parent, unsigned int width, unsigned int height);
+	~Arena();
 
-	private:
-		// let's deprecate copying background object
-		Arena(const Arena&) = delete;
-		Arena operator=(const Arena&) = delete;
+	int rightSide() const;
+	int downSide() const;
+	int leftSide() const;
+	int upSide() const;
 
-		SDL_Renderer* _parent{ nullptr };
+	void adjustBorder(const int& value, Wheel* wheel);
 
-		// We need destination rectangle
-		SDL_Rect _rectangle;
-		SDL_Rect _rectangleMax;
-		SDL_Rect _rectangleMin;
+	int draw();
 
-		struct Color
-		{
-			public:
-				Color(unsigned char red, unsigned char green, unsigned char blue)
-					: _red(red), _green(green), _blue(blue)
-				{}
+private:
+	// let's deprecate copying background object
+	Arena(const Arena&) = delete;
+	Arena operator=(const Arena&) = delete;
 
-			private:
-				unsigned char _red{};
-				unsigned char _green{};
-				unsigned char _blue{};
-		};
+	SDL_Renderer* _parent{ nullptr };
 
-		Color* _color;
+	// We need destination rectangle
+	SDL_Rect _rectangle;
+	SDL_Rect _rectangleMax;
+	SDL_Rect _rectangleMin;
+
+	struct Color
+	{
+		Color(unsigned char red, unsigned char green, unsigned char blue) : _red(red), _green(green), _blue(blue) {}
+		unsigned char _red{};
+		unsigned char _green{};
+		unsigned char _blue{};
+	};
+
+	Color* _color;
+
+	bool _shrink{ true };
 };
 
 inline Arena::Arena(SDL_Renderer* parent, unsigned int width, unsigned int height)
@@ -70,4 +77,61 @@ inline Arena::Arena(SDL_Renderer* parent, unsigned int width, unsigned int heigh
 
 	// setting the color
 	_color = new Color(34, 124, 200);
+}
+
+inline int Arena::rightSide() const { return _rectangle.x + _rectangle.w; }
+
+inline int Arena::downSide() const { return _rectangle.y + _rectangle.h; }
+
+inline int Arena::leftSide() const { return _rectangle.x; }
+
+inline int Arena::upSide() const { return _rectangle.y; }
+
+inline void Arena::adjustBorder(const int& value, Wheel* wheel)
+{
+	if (																				   //
+		((_rectangle.w > _rectangleMin.w && _rectangle.h > _rectangleMin.h) && _shrink)	   //
+		||																				   //
+		(_rectangle.w >= _rectangleMax.w)												   //
+		||																				   //
+		(_rectangle.h >= _rectangleMax.h)												   //
+	)
+	{
+		_rectangle.x += value;
+		_rectangle.y += value;
+		_rectangle.w -= 2 * value;
+		_rectangle.h -= 2 * value;
+		_shrink = true;
+		wheel->setThick(1);
+	}
+	else if (																				//
+		(_rectangle.w <= _rectangleMin.w)													//
+		||																					//
+		(_rectangle.h <= _rectangleMin.h)													//
+		||																					//
+		((_rectangle.w < _rectangleMax.w && _rectangle.h < _rectangleMax.h) && !_shrink)	//
+	)
+	{
+		_rectangle.x -= value;
+		_rectangle.y -= value;
+		_rectangle.w += 2 * value;
+		_rectangle.h += 2 * value;
+		_shrink = false;
+		wheel->setThick(-1);
+	}
+}
+
+inline int Arena::draw()
+{
+	SDL_SetRenderDrawColor(	   //
+		_parent,			   //
+		_color->_red,		   //
+		_color->_green,		   //
+		_color->_blue,		   //
+		SDL_ALPHA_OPAQUE	   //
+	);
+
+	return SDL_RenderDrawRect(_parent,		 //
+							  &_rectangle	 //
+	);
 }

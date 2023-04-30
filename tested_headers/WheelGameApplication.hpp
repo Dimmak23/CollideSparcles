@@ -13,41 +13,45 @@
 #endif
 
 #include "Arena.hpp"
-#include "BackgroundTexture.hpp"
+#include "Background.hpp"
 #include "Wheel.hpp"
 
 class WheelGameApplication
 {
-	public:
-		WheelGameApplication(int argc, const char* argv[]);
-		~WheelGameApplication();
-		void initializeSDL();
-		void gamePlay();
+public:
+	WheelGameApplication(int argc, const char* argv[]);
+	~WheelGameApplication();
+	void initializeSDL();
+	void clampObjects(Arena* pArena, Wheel* pWheel);
+	void gamePlay();
 
-	private:
-		// let's deprecate copying application
-		WheelGameApplication(const WheelGameApplication&) = delete;
-		WheelGameApplication operator=(const WheelGameApplication&) = delete;
+private:
+	// let's deprecate copying application
+	WheelGameApplication(const WheelGameApplication&) = delete;
+	WheelGameApplication operator=(const WheelGameApplication&) = delete;
 
-		unsigned int _appXPos{ 10 };
-		unsigned int _appYPos{ 10 };
-		unsigned int _appWidth{ 640 };
-		unsigned int _appHeight{ 480 };
+	unsigned int _appXPos{ 10 };
+	unsigned int _appYPos{ 10 };
+	unsigned int _appWidth{ 640 };
+	unsigned int _appHeight{ 480 };
 
-		SDL_Window* _gWindow{ nullptr };
-		SDL_Renderer* _gRenderer{ nullptr };
+	SDL_Window* _gWindow{ nullptr };
+	SDL_Renderer* _gRenderer{ nullptr };
 
-		SDL_Rect _gRect;
+	SDL_Rect _gRect;
 
-		BackgroundTexture* _background{ nullptr };
-		Arena* _arena{ nullptr };
-		Wheel* _wheel{ nullptr };
+	Background* _background{ nullptr };
+	Arena* _arena{ nullptr };
+	Wheel* _wheel{ nullptr };
 
-		// keeping track on the status of the creation
-		bool _callingStatus{ false };
+	// keeping track on the status of the creation
+	bool _callingStatus{ false };
 
-		// check maybe user whant to exit
-		bool _running{ true };
+	// check maybe user whant to exit
+	bool _running{ true };
+
+	// check if we already have shrink arena and adjust wheel position
+	bool _firstTimeEnter{ true };
 };
 
 inline WheelGameApplication::WheelGameApplication(int argc, const char* argv[])
@@ -88,7 +92,7 @@ inline WheelGameApplication::WheelGameApplication(int argc, const char* argv[])
 	// initialize game objects
 
 	// build background texture according to the window size
-	_background = new BackgroundTexture(_gRenderer, _appWidth, _appHeight);
+	_background = new Background(_gRenderer, _appWidth, _appHeight);
 
 	// build arena lines with initial sizes
 	_arena = new Arena(_gRenderer, _appWidth, _appHeight);
@@ -128,6 +132,38 @@ inline void WheelGameApplication::initializeSDL()
 	}
 }
 
+inline void WheelGameApplication::clampObjects(Arena* pArena, Wheel* pWheel)
+{
+	if (pWheel->rightSide() > pArena->rightSide())
+	{
+		pWheel->bounce(pArena->rightSide(), RIGHT);
+		pWheel->setMoveDelta(DOWN);
+		_firstTimeEnter = true;
+	}
+	else if (pWheel->downSide() > pArena->downSide())
+	{
+		pWheel->bounce(pArena->downSide(), DOWN);
+		pWheel->setMoveDelta(LEFT);
+	}
+	else if (pWheel->leftSide() < pArena->leftSide())
+	{
+		pWheel->bounce(pArena->leftSide(), LEFT);
+		pWheel->setMoveDelta(UP);
+	}
+	else if (pWheel->upSide() < pArena->upSide())
+	{
+		pWheel->bounce(pArena->upSide(), UP);
+		pWheel->setMoveDelta(RIGHT);
+
+		if (_firstTimeEnter)
+		{
+			// pWheel->adjustPosition(10);
+			pArena->adjustBorder(10, pWheel);
+			_firstTimeEnter = false;
+		}
+	}
+}
+
 inline void WheelGameApplication::gamePlay()
 {
 	// Event handling
@@ -140,22 +176,30 @@ inline void WheelGameApplication::gamePlay()
 		SDL_RenderClear(_gRenderer);
 
 		// draw background
-
-		// draw arena
+		_background->draw();
 
 		// set wheel texture alpha mod
 		_wheel->setTextureAlphaMod();
 		// change wheel opacity value
 		_wheel->changeOpacity();
 		// clamp wheel opacity
+		_wheel->clampOpacity();
 
 		// change wheel position
-		// clamp wheel position
+		_wheel->implementMovement();
+		// clamp wheel movement direction
+		this->clampObjects(_arena, _wheel);
 
 		// change wheel rotation angle
+		_wheel->changeRotation(2.0);
 		// clamp wheel rotation angle
+		_wheel->clampRotation();
 
 		// draw wheel
+		_wheel->draw();
+
+		// draw arena
+		_arena->draw();
 
 		// Show everything that was rendered
 		SDL_RenderPresent(_gRenderer);

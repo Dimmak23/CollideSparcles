@@ -37,7 +37,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 # Let's keep features that we will freq. re-compile and add there something
 # also explicitly telling that some features needs testing
 set(INCLUDES "${CMAKE_SOURCE_DIR}/tested_headers")
-include_directories(${INCLUDES})
+# include_directories(${INCLUDES})
 
 # Starting point for all libraries, every single of them will be added
 # explicitly with modificator (PRIVATE, PUBLIC, INTERFACE)
@@ -254,6 +254,11 @@ target_link_libraries(
 	PRIVATE SDL2::SDL2
 	PRIVATE SDL2_image::SDL2_image
 	# PRIVATE searchBroken
+)
+
+target_include_directories(
+	sparkle
+	PUBLIC ${INCLUDES}
 )
 
 if(CMAKE_BUILD_TYPE MATCHES "Debug")

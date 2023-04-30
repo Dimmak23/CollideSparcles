@@ -16,25 +16,27 @@
 
 #include "WheelUtils.hpp"
 
-class BackgroundTexture
+class Background
 {
-	public:
-		BackgroundTexture(SDL_Renderer* parent, unsigned int width, unsigned int height);
-		~BackgroundTexture();
+public:
+	Background(SDL_Renderer* parent, unsigned int width, unsigned int height);
+	~Background();
 
-	private:
-		// let's deprecate copying background object
-		BackgroundTexture(const BackgroundTexture&) = delete;
-		BackgroundTexture operator=(const BackgroundTexture&) = delete;
+	int draw();
 
-		SDL_Renderer* _parent{ nullptr };
-		SDL_Texture* _texture{ nullptr };
+private:
+	// let's deprecate copying background object
+	Background(const Background&) = delete;
+	Background operator=(const Background&) = delete;
 
-		// We need destination rectangle
-		SDL_Rect _rectangle;
+	SDL_Renderer* _parent{ nullptr };
+	SDL_Texture* _texture{ nullptr };
+
+	// We need destination rectangle
+	SDL_Rect _rectangle;
 };
 
-inline BackgroundTexture::BackgroundTexture(SDL_Renderer* parent, unsigned int width, unsigned int height)
+inline Background::Background(SDL_Renderer* parent, unsigned int width, unsigned int height)
 {
 	// catch renderer
 	_parent = parent;
@@ -61,10 +63,12 @@ inline BackgroundTexture::BackgroundTexture(SDL_Renderer* parent, unsigned int w
 	}
 }
 
-inline BackgroundTexture::~BackgroundTexture()
+inline Background::~Background()
 {
 	//
 	SDL_DestroyTexture(_texture);
 	//
 	_parent = nullptr;
 }
+
+inline int Background::draw() { return SDL_RenderCopy(_parent, _texture, &_rectangle, nullptr); }

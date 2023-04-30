@@ -1,5 +1,7 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
+// #include <SDL2/SDL.h>
+#include <SDL.h>
+// #include <SDL2/SDL_image.h>
+#include <SDL_image.h>
 
 #include <iostream>
 
@@ -129,9 +131,6 @@ int main(/*int argc, char const *argv[]*/)
 	arenaBorder.w = lighterTrajectory.w + lighterR.w;
 	arenaBorder.h = lighterTrajectory.h + lighterR.h;
 
-	unsigned char opacity{ 255 };
-	int sign{ -1 };
-
 	// std::cout << "change alpha mode: " << SDL_SetTextureAlphaMod(lighterT, opacity) << std::endl;
 	// draw image in main display as reference to compare with further renderings
 	callingStatus = SDL_RenderCopy(renderer, lighterT, nullptr, &lighterR);
@@ -139,19 +138,18 @@ int main(/*int argc, char const *argv[]*/)
 	// Show everything that was rendered
 	SDL_RenderPresent(renderer);
 
+	short deltaX{ 1 };
+	short deltaY{};
+	double rotationAngle{ 0.0 };
+	unsigned char opacity{ 255 };
+	int sign{ -1 };
+	SDL_Point lighterC = { lighterR.w / 2, lighterR.h / 2 };
+
 	// Event handling
 	SDL_Event eventIns;
 
-	bool running{ true };
-
-	short deltaX{ 1 };
-	short deltaY{};
-
-	double rotationAngle{ 0.0 };
-
 	bool firstTimeEnter{ true };
-
-	SDL_Point lighterC = { lighterR.w / 2, lighterR.h / 2 };
+	bool running{ true };
 
 	while (running)
 	{

@@ -1,7 +1,16 @@
 #pragma once
 
+#ifdef _WIN32
+
+#include <SDL.h>
+#include <SDL_image.h>
+
+#else
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+
+#endif
 
 #include <iostream>
 
@@ -45,7 +54,8 @@ inline BackgroundTexture::BackgroundTexture(SDL_Renderer* parent, unsigned int w
 		std::cout << "Background surface could not be created! SDL Error: " << SDL_GetError() << std::endl;
 	}
 	else
-	{	 // Create a texture from the surface
+	{
+		// Create a texture from the surface
 		_texture = SDL_CreateTextureFromSurface(_parent, tempSource);
 		SDL_FreeSurface(tempSource);
 	}

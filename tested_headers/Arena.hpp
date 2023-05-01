@@ -28,6 +28,8 @@ public:
 
 	void adjustBorder(const int& value, Wheel* wheel);
 
+	bool isShrinking() const;
+
 	int draw();
 
 private:
@@ -79,6 +81,12 @@ inline Arena::Arena(SDL_Renderer* parent, unsigned int width, unsigned int heigh
 	_color = new Color(34, 124, 200);
 }
 
+inline Arena::~Arena()
+{
+	_parent = nullptr;
+	delete _color;
+}
+
 inline int Arena::rightSide() const { return _rectangle.x + _rectangle.w; }
 
 inline int Arena::downSide() const { return _rectangle.y + _rectangle.h; }
@@ -92,9 +100,9 @@ inline void Arena::adjustBorder(const int& value, Wheel* wheel)
 	if (																				   //
 		((_rectangle.w > _rectangleMin.w && _rectangle.h > _rectangleMin.h) && _shrink)	   //
 		||																				   //
-		(_rectangle.w >= _rectangleMax.w)												   //
+		((_rectangle.w >= _rectangleMax.w))												   //
 		||																				   //
-		(_rectangle.h >= _rectangleMax.h)												   //
+		((_rectangle.h >= _rectangleMax.h))												   //
 	)
 	{
 		_rectangle.x += value;
@@ -103,11 +111,12 @@ inline void Arena::adjustBorder(const int& value, Wheel* wheel)
 		_rectangle.h -= 2 * value;
 		_shrink = true;
 		wheel->setThick(1);
+		std::cout << "going by clock\n";
 	}
 	else if (																				//
-		(_rectangle.w <= _rectangleMin.w)													//
+		((_rectangle.w <= _rectangleMin.w))													//
 		||																					//
-		(_rectangle.h <= _rectangleMin.h)													//
+		((_rectangle.h <= _rectangleMin.h))													//
 		||																					//
 		((_rectangle.w < _rectangleMax.w && _rectangle.h < _rectangleMax.h) && !_shrink)	//
 	)
@@ -118,8 +127,11 @@ inline void Arena::adjustBorder(const int& value, Wheel* wheel)
 		_rectangle.h += 2 * value;
 		_shrink = false;
 		wheel->setThick(-1);
+		std::cout << "going against clock\n";
 	}
 }
+
+inline bool Arena::isShrinking() const { return _shrink; }
 
 inline int Arena::draw()
 {

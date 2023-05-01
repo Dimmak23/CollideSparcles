@@ -138,12 +138,12 @@ inline void WheelGameApplication::clampObjects(Arena* pArena, Wheel* pWheel)
 	{
 		pWheel->bounce(pArena->rightSide(), RIGHT);
 		pWheel->setMoveDelta(DOWN);
-		_firstTimeEnter = true;
 	}
 	else if (pWheel->downSide() > pArena->downSide())
 	{
 		pWheel->bounce(pArena->downSide(), DOWN);
 		pWheel->setMoveDelta(LEFT);
+		_firstTimeEnter = true;
 	}
 	else if (pWheel->leftSide() < pArena->leftSide())
 	{
@@ -152,15 +152,16 @@ inline void WheelGameApplication::clampObjects(Arena* pArena, Wheel* pWheel)
 	}
 	else if (pWheel->upSide() < pArena->upSide())
 	{
+		if (_firstTimeEnter)
+		{
+			pWheel->adjustPosition(5, 5);
+			pArena->adjustBorder(5, pWheel);
+			_firstTimeEnter = false;
+		}
 		pWheel->bounce(pArena->upSide(), UP);
 		pWheel->setMoveDelta(RIGHT);
 
-		if (_firstTimeEnter)
-		{
-			// pWheel->adjustPosition(10);
-			pArena->adjustBorder(10, pWheel);
-			_firstTimeEnter = false;
-		}
+		_wheel->debug_data();
 	}
 }
 
@@ -191,7 +192,7 @@ inline void WheelGameApplication::gamePlay()
 		this->clampObjects(_arena, _wheel);
 
 		// change wheel rotation angle
-		_wheel->changeRotation(2.0);
+		_wheel->changeRotation(1.0);
 		// clamp wheel rotation angle
 		_wheel->clampRotation();
 

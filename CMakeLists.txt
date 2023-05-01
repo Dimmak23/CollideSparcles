@@ -123,7 +123,7 @@ add_executable(
 add_executable(
 	sparkle
 	targets/sparkle.cpp
-	# ${INCLUDES}/header_01.cpp
+	${INCLUDES}/Wheel.cpp
 	# ${INCLUDES}/header_02.cpp
 	# ${INCLUDES}/header_03.cpp
 )

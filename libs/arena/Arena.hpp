@@ -26,7 +26,9 @@ public:
 	int leftSide() const;
 	int upSide() const;
 
-	void adjustBorder(const int& value, Wheel* wheel);
+	// returns 'true' - when arena size bigger from max envelope,
+	// 'false' - when smaller then min envelope
+	bool moveWheelCW(const int& value);
 
 	bool isShrinking() const;
 

@@ -38,7 +38,7 @@ int Arena::leftSide() const { return _rectangle.x; }
 
 int Arena::upSide() const { return _rectangle.y; }
 
-void Arena::adjustBorder(const int& value, Wheel* wheel)
+bool Arena::moveWheelCW(const int& value)
 {
 	if (																				   //
 		((_rectangle.w > _rectangleMin.w && _rectangle.h > _rectangleMin.h) && _shrink)	   //
@@ -53,8 +53,9 @@ void Arena::adjustBorder(const int& value, Wheel* wheel)
 		_rectangle.w -= 2 * value;
 		_rectangle.h -= 2 * value;
 		_shrink = true;
-		wheel->setThick(1);
 		std::cout << "going by clock\n";
+		// wheel->setThick(1);
+		return true;
 	}
 	else if (																				//
 		((_rectangle.w <= _rectangleMin.w))													//
@@ -69,8 +70,9 @@ void Arena::adjustBorder(const int& value, Wheel* wheel)
 		_rectangle.w += 2 * value;
 		_rectangle.h += 2 * value;
 		_shrink = false;
-		wheel->setThick(-1);
 		std::cout << "going against clock\n";
+		// wheel->setThick(-1);
+		return false;
 	}
 }
 

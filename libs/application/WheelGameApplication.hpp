@@ -19,7 +19,7 @@
 class WheelGameApplication
 {
 public:
-	WheelGameApplication(int argc, const char* argv[]);
+	WheelGameApplication(int argc, char* argv[]);
 	~WheelGameApplication();
 	void initializeSDL();
 	void clampObjects(Arena* pArena, Wheel* pWheel);
@@ -30,8 +30,8 @@ private:
 	WheelGameApplication(const WheelGameApplication&) = delete;
 	WheelGameApplication operator=(const WheelGameApplication&) = delete;
 
-	unsigned int _appXPos{ 10 };
-	unsigned int _appYPos{ 10 };
+	unsigned int _appXPos{ 100 };
+	unsigned int _appYPos{ 100 };
 	unsigned int _appWidth{ 640 };
 	unsigned int _appHeight{ 480 };
 

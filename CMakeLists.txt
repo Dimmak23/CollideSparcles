@@ -2,32 +2,13 @@
 # CMAKE_CXX_STANDARD requires 3.12 and the convenience function
 # `FetchContent_MakeAvailable` was introduced in CMake 3.14
 cmake_minimum_required(VERSION 3.14.0)
-project(RENDERS VERSION 0.0.1)
+project(SparklesGame VERSION 0.0.1)
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# if (MSVC)
-# 	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS")
-# 	add_compile_options(/W3)
-# elseif(WINDOWS)
-# 	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mwindows")
-#     # additional warnings
-#     add_compile_options(
-# 		-Wall
-# 		-Wextra
-# 		-Wpedantic
-# 		-Wconversion
-# 		)
-# else()
-# 	add_compile_options(
-# 		-Wall
-# 		-Wextra
-# 		-Wpedantic
-# 		-Wconversion
-# 	)
-# endif()
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mwindows")
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
@@ -186,28 +167,28 @@ if(CMAKE_BUILD_TYPE MATCHES "Debug")
 	set_target_properties(
 		arena
 		PROPERTIES
-		# RUNTIME_OUTPUT_DIRECTORY "../executables/DEBUG/sparkle"
+		RUNTIME_OUTPUT_DIRECTORY "../executables/DEBUG/sparkle"
 		LIBRARY_OUTPUT_DIRECTORY "../executables/DEBUG/sparkle"				# Dynamic libraries
 		ARCHIVE_OUTPUT_DIRECTORY "../executables/DEBUG/sparkle/static_libs" 	# Static libraries
 	)
 	set_target_properties(
 		background
 		PROPERTIES
-		# RUNTIME_OUTPUT_DIRECTORY "../executables/DEBUG/sparkle"
+		RUNTIME_OUTPUT_DIRECTORY "../executables/DEBUG/sparkle"
 		LIBRARY_OUTPUT_DIRECTORY "../executables/DEBUG/sparkle"				# Dynamic libraries
 		ARCHIVE_OUTPUT_DIRECTORY "../executables/DEBUG/sparkle/static_libs" 	# Static libraries
 	)
 	set_target_properties(
 		wheel
 		PROPERTIES
-		# RUNTIME_OUTPUT_DIRECTORY "../executables/DEBUG/sparkle"
+		RUNTIME_OUTPUT_DIRECTORY "../executables/DEBUG/sparkle"
 		LIBRARY_OUTPUT_DIRECTORY "../executables/DEBUG/sparkle"				# Dynamic libraries
 		ARCHIVE_OUTPUT_DIRECTORY "../executables/DEBUG/sparkle/static_libs" 	# Static libraries
 	)
 	set_target_properties(
 		application
 		PROPERTIES
-		# RUNTIME_OUTPUT_DIRECTORY "../executables/DEBUG/sparkle"
+		RUNTIME_OUTPUT_DIRECTORY "../executables/DEBUG/sparkle"
 		LIBRARY_OUTPUT_DIRECTORY "../executables/DEBUG/sparkle"				# Dynamic libraries
 		ARCHIVE_OUTPUT_DIRECTORY "../executables/DEBUG/sparkle/static_libs" 	# Static libraries
 	)
@@ -215,10 +196,23 @@ if(CMAKE_BUILD_TYPE MATCHES "Debug")
 		sparkle
 		PROPERTIES
 		RUNTIME_OUTPUT_DIRECTORY "../executables/DEBUG/sparkle"
-		# LIBRARY_OUTPUT_DIRECTORY "../executables/DEBUG/sparkle"				# Dynamic libraries
-		# ARCHIVE_OUTPUT_DIRECTORY "../executables/DEBUG/sparkle/static_libs" 	# Static libraries
+		LIBRARY_OUTPUT_DIRECTORY "../executables/DEBUG/sparkle"				# Dynamic libraries
+		ARCHIVE_OUTPUT_DIRECTORY "../executables/DEBUG/sparkle/static_libs" 	# Static libraries
 	)
 	
+	add_custom_command(
+		TARGET sparkle POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			"$<TARGET_FILE_DIR:SDL2::SDL2>/SDL2d.dll"
+			$<TARGET_FILE_DIR:sparkle>/"SDL2d.dll"
+	)
+	add_custom_command(
+		TARGET sparkle POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			"$<TARGET_FILE_DIR:SDL2_image::SDL2_image>/SDL2_imaged.dll"
+			$<TARGET_FILE_DIR:sparkle>/"SDL2_imaged.dll"
+	)
+
 	if(NOT EXISTS ../executables/DEBUG/sparkle/assets/)
 		add_custom_command(
 			TARGET sparkle POST_BUILD
@@ -232,28 +226,28 @@ else()
 	set_target_properties(
 		arena
 		PROPERTIES
-		# RUNTIME_OUTPUT_DIRECTORY "../executables/RELEASE/sparkle"
+		RUNTIME_OUTPUT_DIRECTORY "../executables/RELEASE/sparkle"
 		LIBRARY_OUTPUT_DIRECTORY "../executables/RELEASE/sparkle"				# Dynamic libraries
 		ARCHIVE_OUTPUT_DIRECTORY "../executables/RELEASE/sparkle/static_libs" 	# Static libraries
 	)
 	set_target_properties(
 		background
 		PROPERTIES
-		# RUNTIME_OUTPUT_DIRECTORY "../executables/RELEASE/sparkle"
+		RUNTIME_OUTPUT_DIRECTORY "../executables/RELEASE/sparkle"
 		LIBRARY_OUTPUT_DIRECTORY "../executables/RELEASE/sparkle"				# Dynamic libraries
 		ARCHIVE_OUTPUT_DIRECTORY "../executables/RELEASE/sparkle/static_libs" 	# Static libraries
 	)
 	set_target_properties(
 		wheel
 		PROPERTIES
-		# RUNTIME_OUTPUT_DIRECTORY "../executables/RELEASE/sparkle"
+		RUNTIME_OUTPUT_DIRECTORY "../executables/RELEASE/sparkle"
 		LIBRARY_OUTPUT_DIRECTORY "../executables/RELEASE/sparkle"				# Dynamic libraries
 		ARCHIVE_OUTPUT_DIRECTORY "../executables/RELEASE/sparkle/static_libs" 	# Static libraries
 	)
 	set_target_properties(
 		application
 		PROPERTIES
-		# RUNTIME_OUTPUT_DIRECTORY "../executables/RELEASE/sparkle"
+		RUNTIME_OUTPUT_DIRECTORY "../executables/RELEASE/sparkle"
 		LIBRARY_OUTPUT_DIRECTORY "../executables/RELEASE/sparkle"				# Dynamic libraries
 		ARCHIVE_OUTPUT_DIRECTORY "../executables/RELEASE/sparkle/static_libs" 	# Static libraries
 	)
@@ -261,8 +255,21 @@ else()
 		sparkle
 		PROPERTIES
 		RUNTIME_OUTPUT_DIRECTORY "../executables/RELEASE/sparkle"
-		# LIBRARY_OUTPUT_DIRECTORY "../executables/RELEASE/sparkle"				# Dynamic libraries
-		# ARCHIVE_OUTPUT_DIRECTORY "../executables/RELEASE/sparkle/static_libs" 	# Static libraries
+		LIBRARY_OUTPUT_DIRECTORY "../executables/RELEASE/sparkle"				# Dynamic libraries
+		ARCHIVE_OUTPUT_DIRECTORY "../executables/RELEASE/sparkle/static_libs" 	# Static libraries
+	)
+
+	add_custom_command(
+		TARGET sparkle POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			"$<TARGET_FILE_DIR:SDL2::SDL2>/SDL2.dll"
+			$<TARGET_FILE_DIR:sparkle>/"SDL2.dll"
+	)
+	add_custom_command(
+		TARGET sparkle POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			"$<TARGET_FILE_DIR:SDL2_image::SDL2_image>/SDL2_image.dll"
+			$<TARGET_FILE_DIR:sparkle>/"SDL2_image.dll"
 	)
 
 	if(NOT EXISTS ../executables/RELEASE/sparkle/assets/)
@@ -275,6 +282,22 @@ else()
 	endif()
 endif()
 
+# if (MSVC)
+# 	target_compile_options(
+# 		sparkle
+# 		PRIVATE
+# 		/W3
+# 	)
+# elseif(WINDOWS)
+# 	target_compile_options(
+# 		sparkle
+# 		PRIVATE
+# 		-Wall
+# 		-Wextra
+# 		-Wpedantic
+# 		-Wconversion
+# 	)
+# else()
 target_compile_options(
 	sparkle
 	PRIVATE
@@ -283,3 +306,4 @@ target_compile_options(
 	-Wpedantic
 	-Wconversion
 )
+# endif()

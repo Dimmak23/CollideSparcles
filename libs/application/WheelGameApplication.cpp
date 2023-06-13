@@ -1,8 +1,9 @@
 #include "WheelGameApplication.hpp"
 
-WheelGameApplication::WheelGameApplication(int argc, const char* argv[])
+WheelGameApplication::WheelGameApplication(int argc, char* argv[])
 {
 	// take optional arguments with window size
+	// proceed optional arguments
 
 	// update destination window rectangle
 	_gRect.x = _appXPos;
@@ -101,7 +102,12 @@ void WheelGameApplication::clampObjects(Arena* pArena, Wheel* pWheel)
 		if (_firstTimeEnter)
 		{
 			pWheel->adjustPosition(5, 5);
-			pArena->adjustBorder(5, pWheel);
+
+			if (pArena->moveWheelCW(5))
+				pWheel->setThick(1);
+			else
+				pWheel->setThick(-1);
+
 			_firstTimeEnter = false;
 		}
 		pWheel->bounce(pArena->upSide(), UP);

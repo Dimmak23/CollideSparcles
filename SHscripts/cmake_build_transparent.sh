@@ -1,0 +1,1 @@
+cmake --build build --target transparent -j 8 -v

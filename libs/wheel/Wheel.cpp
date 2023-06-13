@@ -15,7 +15,7 @@ Wheel::Wheel(SDL_Renderer* parent, unsigned int width, unsigned int height)
 
 	// Create a lighter surface from the '<?>.png'
 	SDL_Surface* tempSurface = nullptr;
-	tempSurface = IMG_Load(Utils::_wheelPath.c_str());
+	tempSurface = IMG_Load(WUtils::_wheelPath.c_str());
 
 	if (tempSurface == nullptr)
 	{

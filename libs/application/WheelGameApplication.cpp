@@ -1,60 +1,6 @@
-#pragma once
+#include "WheelGameApplication.hpp"
 
-#ifdef _WIN32
-
-#include <SDL.h>
-#include <SDL_image.h>
-
-#else
-
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-
-#endif
-
-#include "Arena.hpp"
-#include "Background.hpp"
-#include "Wheel.hpp"
-
-class WheelGameApplication
-{
-public:
-	WheelGameApplication(int argc, const char* argv[]);
-	~WheelGameApplication();
-	void initializeSDL();
-	void clampObjects(Arena* pArena, Wheel* pWheel);
-	void gamePlay();
-
-private:
-	// let's deprecate copying application
-	WheelGameApplication(const WheelGameApplication&) = delete;
-	WheelGameApplication operator=(const WheelGameApplication&) = delete;
-
-	unsigned int _appXPos{ 10 };
-	unsigned int _appYPos{ 10 };
-	unsigned int _appWidth{ 640 };
-	unsigned int _appHeight{ 480 };
-
-	SDL_Window* _gWindow{ nullptr };
-	SDL_Renderer* _gRenderer{ nullptr };
-
-	SDL_Rect _gRect;
-
-	Background* _background{ nullptr };
-	Arena* _arena{ nullptr };
-	Wheel* _wheel{ nullptr };
-
-	// keeping track on the status of the creation
-	bool _callingStatus{ false };
-
-	// check maybe user whant to exit
-	bool _running{ true };
-
-	// check if we already have shrink arena and adjust wheel position
-	bool _firstTimeEnter{ true };
-};
-
-inline WheelGameApplication::WheelGameApplication(int argc, const char* argv[])
+WheelGameApplication::WheelGameApplication(int argc, const char* argv[])
 {
 	// take optional arguments with window size
 
@@ -98,10 +44,10 @@ inline WheelGameApplication::WheelGameApplication(int argc, const char* argv[])
 	_arena = new Arena(_gRenderer, _appWidth, _appHeight);
 
 	// build wheel with initial size
-	_wheel = new Wheel(_gRenderer, Utils::_wheel._width, Utils::_wheel._height);
+	_wheel = new Wheel(_gRenderer, WUtils::_wheel._width, WUtils::_wheel._height);
 }
 
-inline WheelGameApplication::~WheelGameApplication()
+WheelGameApplication::~WheelGameApplication()
 {
 	// destroy resources
 	SDL_DestroyRenderer(_gRenderer);
@@ -111,7 +57,7 @@ inline WheelGameApplication::~WheelGameApplication()
 	SDL_Quit();
 }
 
-inline void WheelGameApplication::initializeSDL()
+void WheelGameApplication::initializeSDL()
 {
 	// use parsed window size if any
 
@@ -132,7 +78,7 @@ inline void WheelGameApplication::initializeSDL()
 	}
 }
 
-inline void WheelGameApplication::clampObjects(Arena* pArena, Wheel* pWheel)
+void WheelGameApplication::clampObjects(Arena* pArena, Wheel* pWheel)
 {
 	if (pWheel->rightSide() > pArena->rightSide())
 	{
@@ -165,7 +111,7 @@ inline void WheelGameApplication::clampObjects(Arena* pArena, Wheel* pWheel)
 	}
 }
 
-inline void WheelGameApplication::gamePlay()
+void WheelGameApplication::gamePlay()
 {
 	// Event handling
 	SDL_Event eventIns;
@@ -192,7 +138,7 @@ inline void WheelGameApplication::gamePlay()
 		this->clampObjects(_arena, _wheel);
 
 		// change wheel rotation angle
-		_wheel->changeRotation(1.0);
+		_wheel->changeRotation(4.0);
 		// clamp wheel rotation angle
 		_wheel->clampRotation();
 

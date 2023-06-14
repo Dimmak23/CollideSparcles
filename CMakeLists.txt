@@ -8,7 +8,7 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mwindows")
+# set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mwindows")
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
@@ -31,10 +31,9 @@ FetchContent_Declare(
 	SDL2
     GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
 	# GIT_REPOSITORY git@github.com:libsdl-org/SDL.git
-    GIT_TAG release-2.26.4
+    GIT_TAG release-2.26.5
     # GIT_TAG SDL2
 )
-	
 FetchContent_MakeAvailable(SDL2)
 	
 FetchContent_Declare(
@@ -45,7 +44,6 @@ FetchContent_Declare(
 	# GIT_TAG        release-2.6.x # replace with the version you want to use
 	GIT_TAG       SDL2
 )
-		
 FetchContent_MakeAvailable(SDL2_image)
 
 # Actual usage will be kept for every target in the separate file
@@ -74,7 +72,6 @@ add_library(
 target_include_directories(
 	arena
 	PRIVATE ${LIB_ARENA}
-	PRIVATE ${LIB_WHEEL} #Need to make arena separate class from Wheel
 	PRIVATE ${UTILS}
 )
 target_link_libraries(
@@ -162,7 +159,8 @@ target_link_libraries(
 )
 		
 # Specify where target binary will be saved
-if(CMAKE_BUILD_TYPE MATCHES "Debug")
+if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+# if(CMAKE_BUILD_TYPE MATCHES "Debug")
 	
 	set_target_properties(
 		arena
@@ -200,18 +198,18 @@ if(CMAKE_BUILD_TYPE MATCHES "Debug")
 		ARCHIVE_OUTPUT_DIRECTORY "../executables/DEBUG/sparkle/static_libs" 	# Static libraries
 	)
 	
-	add_custom_command(
-		TARGET sparkle POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy_if_different
-			"$<TARGET_FILE_DIR:SDL2::SDL2>/SDL2d.dll"
-			$<TARGET_FILE_DIR:sparkle>/"SDL2d.dll"
-	)
-	add_custom_command(
-		TARGET sparkle POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy_if_different
-			"$<TARGET_FILE_DIR:SDL2_image::SDL2_image>/SDL2_imaged.dll"
-			$<TARGET_FILE_DIR:sparkle>/"SDL2_imaged.dll"
-	)
+	# add_custom_command(
+	# 	TARGET sparkle POST_BUILD
+	# 	COMMAND ${CMAKE_COMMAND} -E copy_if_different
+	# 		"$<TARGET_FILE_DIR:SDL2::SDL2>/SDL2d.dll"
+	# 		$<TARGET_FILE_DIR:sparkle>/"SDL2d.dll"
+	# )
+	# add_custom_command(
+	# 	TARGET sparkle POST_BUILD
+	# 	COMMAND ${CMAKE_COMMAND} -E copy_if_different
+	# 		"$<TARGET_FILE_DIR:SDL2_image::SDL2_image>/SDL2_imaged.dll"
+	# 		$<TARGET_FILE_DIR:sparkle>/"SDL2_imaged.dll"
+	# )
 
 	if(NOT EXISTS ../executables/DEBUG/sparkle/assets/)
 		add_custom_command(
@@ -259,18 +257,18 @@ else()
 		ARCHIVE_OUTPUT_DIRECTORY "../executables/RELEASE/sparkle/static_libs" 	# Static libraries
 	)
 
-	add_custom_command(
-		TARGET sparkle POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy_if_different
-			"$<TARGET_FILE_DIR:SDL2::SDL2>/SDL2.dll"
-			$<TARGET_FILE_DIR:sparkle>/"SDL2.dll"
-	)
-	add_custom_command(
-		TARGET sparkle POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy_if_different
-			"$<TARGET_FILE_DIR:SDL2_image::SDL2_image>/SDL2_image.dll"
-			$<TARGET_FILE_DIR:sparkle>/"SDL2_image.dll"
-	)
+	# add_custom_command(
+	# 	TARGET sparkle POST_BUILD
+	# 	COMMAND ${CMAKE_COMMAND} -E copy_if_different
+	# 		"$<TARGET_FILE_DIR:SDL2::SDL2>/SDL2.dll"
+	# 		$<TARGET_FILE_DIR:sparkle>/"SDL2.dll"
+	# )
+	# add_custom_command(
+	# 	TARGET sparkle POST_BUILD
+	# 	COMMAND ${CMAKE_COMMAND} -E copy_if_different
+	# 		"$<TARGET_FILE_DIR:SDL2_image::SDL2_image>/SDL2_image.dll"
+	# 		$<TARGET_FILE_DIR:sparkle>/"SDL2_image.dll"
+	# )
 
 	if(NOT EXISTS ../executables/RELEASE/sparkle/assets/)
 			add_custom_command(
@@ -298,12 +296,12 @@ endif()
 # 		-Wconversion
 # 	)
 # else()
-target_compile_options(
-	sparkle
-	PRIVATE
-	-Wall
-	-Wextra
-	-Wpedantic
-	-Wconversion
-)
+# target_compile_options(
+# 	sparkle
+# 	PRIVATE
+# 	-Wall
+# 	-Wextra
+# 	-Wpedantic
+# 	-Wconversion
+# )
 # endif()

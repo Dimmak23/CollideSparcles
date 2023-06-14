@@ -12,7 +12,6 @@
 
 #endif
 
-#include "Wheel.hpp"
 #include "WheelUtils.hpp"
 
 class Arena

@@ -1,5 +1,7 @@
 #include "Arena.hpp"
 
+#include <iostream>
+
 Arena::Arena(SDL_Renderer* parent, unsigned int width, unsigned int height)
 {
 	// catch renderer

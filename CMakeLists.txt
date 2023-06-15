@@ -8,24 +8,24 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mwindows")
+# Tell that on Windows OS we want to build a GUI application
+if(WIN32)
+	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mwindows")
+	# Set the Freetype directory manually
+	# Change all of these three path to the correct depending on where FreeType BUILD on your Windows OS machine
+	# set(Freetype_DIR "L:/freetype-2.13.0-win64")
+	# set(FREETYPE_INCLUDE_DIRS "L:/freetype-2.13.0-win64/include/freetype2")
+	# include_directories("L:/freetype-2.13.0-win64/include/freetype2")
+	# set(FREETYPE_LIBRARY "L:/freetype-2.13.0-win64/bin")
+endif()
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-# target reder_test don't have any for now
-# add_library(
-	# searchBroken
-    # STATIC
-    # ${LIBRARIES}/searchers/search_brocken.hpp
-    # ${LIBRARIES}/searchers/search_brocken.cpp
-# )
-	
-# I would like to keep every target binary in it's own dir,
-# also DEBUG and RELEASE dir's inside them as well
-# 'executables' - all executables root
-	
+# Find the Freetype package
+# find_package(Freetype REQUIRED)
+
 include(FetchContent)
-Set(FETCHCONTENT_QUIET FALSE) # To allow cmake print intermidiate comments
+set(FETCHCONTENT_QUIET FALSE) # To allow cmake print intermidiate comments
 	
 FetchContent_Declare(
 	SDL2
@@ -42,9 +42,32 @@ FetchContent_Declare(
 	GIT_REPOSITORY https://github.com/libsdl-org/SDL_image.git
 	# GIT_REPOSITORY git@github.com/libsdl-org/SDL_image.git
 	# GIT_TAG        release-2.6.x # replace with the version you want to use
-	GIT_TAG       SDL2
+	GIT_TAG       SDL2 # Gives you SDL2_image 2.7.0
 )
 FetchContent_MakeAvailable(SDL2_image)
+
+# SDL2 library for fonts
+if(WIN32)
+
+set(SDL_TTF_DIR "L:/SDL2_ttf-2.20.2/i686-w64-mingw32")
+set(SDL_TTF_LIBRARIES "L:/SDL2_ttf-2.20.2/i686-w64-mingw32/bin")
+set(SDL_TTF_INCLUDE_DIRS "L:/SDL2_ttf-2.20.2/i686-w64-mingw32/include/SDL2")
+find_package(SDL_ttf REQUIRED)
+
+else()
+
+FetchContent_Declare(
+	SDL2_ttf
+    GIT_REPOSITORY https://github.com/libsdl-org/SDL_ttf.git
+	# GIT_REPOSITORY git@github.com:libsdl-org/SDL_ttf.git
+	# GIT_TAG        release-2.20.2 # replace with the version you want to use
+	
+	# Only this tag work when use SDL2 library, for some reason
+	GIT_TAG       SDL2 # Gives you SDL2_ttf 2.21.0
+)
+FetchContent_MakeAvailable(SDL2_ttf)
+
+endif()
 
 # Actual usage will be kept for every target in the separate file
 # 'targets' - all targets here
@@ -60,13 +83,16 @@ set(LIBRARIES "${CMAKE_SOURCE_DIR}/libs")
 set(LIB_ARENA "${LIBRARIES}/arena")
 set(LIB_BACK "${LIBRARIES}/background")
 set(LIB_WHEEL "${LIBRARIES}/wheel")
+set(LIB_TWIDGET "${LIBRARIES}/textwidget")
 set(LIB_APPLICATION "${LIBRARIES}/application")
 set(UTILS "${LIBRARIES}/utilities")
+
+set(LIB_TYPE "SHARED")
 
 # Create separate module for the arena projectile
 add_library(
 	arena
-	STATIC
+	${LIB_TYPE}
 	${LIB_ARENA}/Arena.cpp
 )
 target_include_directories(
@@ -76,14 +102,14 @@ target_include_directories(
 )
 target_link_libraries(
 	arena
-	PRIVATE SDL2::SDL2
-	PRIVATE SDL2_image::SDL2_image
+	PUBLIC SDL2::SDL2
+	PUBLIC SDL2_image::SDL2_image
 )
 
 # Create separate module for the background projectile
 add_library(
 	background
-	STATIC
+	${LIB_TYPE}
 	${LIB_BACK}/Background.cpp
 )
 target_include_directories(
@@ -93,14 +119,14 @@ target_include_directories(
 )
 target_link_libraries(
 	background
-	PRIVATE SDL2::SDL2
-	PRIVATE SDL2_image::SDL2_image
+	PUBLIC SDL2::SDL2
+	PUBLIC SDL2_image::SDL2_image
 )
 
 # Create separate module for the wheel projectile
 add_library(
 	wheel
-	STATIC
+	${LIB_TYPE}
 	${LIB_WHEEL}/Wheel.cpp
 )
 target_include_directories(
@@ -110,106 +136,107 @@ target_include_directories(
 )
 target_link_libraries(
 	wheel
-	PRIVATE SDL2::SDL2
-	PRIVATE SDL2_image::SDL2_image
+	PUBLIC SDL2::SDL2
+	PUBLIC SDL2_image::SDL2_image
+)
+
+# Create separate module for the text widget projectile
+add_library(
+	textwidget
+	${LIB_TYPE}
+	${LIB_TWIDGET}/TextWidget.cpp
+)
+target_include_directories(
+	textwidget
+	PRIVATE ${LIB_TWIDGET}
+	PRIVATE ${SDL2_TTF_INCLUDE_DIRS}
+	# PRIVATE ${FREETYPE_INCLUDE_DIRS}
+)
+target_link_libraries(
+	textwidget
+	PUBLIC SDL2::SDL2
+	PUBLIC SDL2_ttf::SDL2_ttf
 )
 
 # Create separate module for the game application
 add_library(
 	application
-	STATIC
+	${LIB_TYPE}
 	${LIB_APPLICATION}/WheelGameApplication.cpp
 )
 target_include_directories(
 	application
 	PUBLIC ${LIB_APPLICATION}
 	PUBLIC ${LIB_ARENA}
-	PUBLIC ${LIB_WHEEL}
-	PUBLIC ${UTILS}
 	PUBLIC ${LIB_BACK}
+	PUBLIC ${LIB_WHEEL}
+	PUBLIC ${LIB_TWIDGET}
+	PUBLIC ${UTILS}
+	PUBLIC ${SDL2_TTF_INCLUDE_DIRS}
+	# PUBLIC ${FREETYPE_INCLUDE_DIRS}
 )
 target_link_libraries(
 	application
-	PRIVATE SDL2::SDL2
-	PRIVATE SDL2_image::SDL2_image
-	PRIVATE arena
-	PRIVATE background
-	PRIVATE wheel
+	PUBLIC arena
+	PUBLIC background
+	PUBLIC wheel
+	PUBLIC textwidget
 )
 
 # create executable
 add_executable(
 	sparkle
 	targets/sparkle.cpp
-	# ${INCLUDES}/header_01.cpp
-	# ${INCLUDES}/header_02.cpp
-	# ${INCLUDES}/header_03.cpp
 )
-#
-# target_include_directories(
-# 	sparkle
-# 	PRIVATE ${LIB_APPLICATION}
-# )
 # linking all necessary libraries
 target_link_libraries(
 	sparkle
-	PRIVATE SDL2::SDL2
-	PRIVATE SDL2_image::SDL2_image
 	PRIVATE application
 )
-		
+
+# I would like to keep every target binary in it's own dir,
+# also DEBUG and RELEASE dir's inside them as well
+# 'executables' - all executables root
+
+# Define a function to set common target properties
+function(set_output_properties TARGET BUILD_TYPE) # BUILD_TYPE == DEBUG || RELEASE
+    set_target_properties(
+        ${TARGET}
+        PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "../executables/${BUILD_TYPE}/sparkle"				# Binary
+        LIBRARY_OUTPUT_DIRECTORY "../executables/${BUILD_TYPE}/sparkle"				# Dynamic libraries
+        ARCHIVE_OUTPUT_DIRECTORY "../executables/${BUILD_TYPE}/sparkle/static_libs" # Static libraries
+    )
+endfunction()
+
 # Specify where target binary will be saved
 if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-# if(CMAKE_BUILD_TYPE MATCHES "Debug")
+
+	set_output_properties(arena "DEBUG")
+	set_output_properties(background "DEBUG")
+	set_output_properties(wheel "DEBUG")
+	set_output_properties(textwidget "DEBUG")
+	set_output_properties(application "DEBUG")
+	set_output_properties(sparkle "DEBUG")
 	
-	set_target_properties(
-		arena
-		PROPERTIES
-		RUNTIME_OUTPUT_DIRECTORY "../executables/DEBUG/sparkle"
-		LIBRARY_OUTPUT_DIRECTORY "../executables/DEBUG/sparkle"				# Dynamic libraries
-		ARCHIVE_OUTPUT_DIRECTORY "../executables/DEBUG/sparkle/static_libs" 	# Static libraries
+	add_custom_command(
+		TARGET sparkle POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			"$<TARGET_FILE_DIR:SDL2::SDL2>/SDL2d.dll"
+			$<TARGET_FILE_DIR:sparkle>/"SDL2d.dll"
 	)
-	set_target_properties(
-		background
-		PROPERTIES
-		RUNTIME_OUTPUT_DIRECTORY "../executables/DEBUG/sparkle"
-		LIBRARY_OUTPUT_DIRECTORY "../executables/DEBUG/sparkle"				# Dynamic libraries
-		ARCHIVE_OUTPUT_DIRECTORY "../executables/DEBUG/sparkle/static_libs" 	# Static libraries
+	add_custom_command(
+		TARGET sparkle POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			"$<TARGET_FILE_DIR:SDL2_image::SDL2_image>/SDL2_imaged.dll"
+			$<TARGET_FILE_DIR:sparkle>/"SDL2_imaged.dll"
 	)
-	set_target_properties(
-		wheel
-		PROPERTIES
-		RUNTIME_OUTPUT_DIRECTORY "../executables/DEBUG/sparkle"
-		LIBRARY_OUTPUT_DIRECTORY "../executables/DEBUG/sparkle"				# Dynamic libraries
-		ARCHIVE_OUTPUT_DIRECTORY "../executables/DEBUG/sparkle/static_libs" 	# Static libraries
+	add_custom_command(
+		TARGET sparkle POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			"$<TARGET_FILE_DIR:SDL2_ttf::SDL2_ttf>/SDL2_ttfd.dll"
+			$<TARGET_FILE_DIR:sparkle>/"SDL2_ttfd.dll"
 	)
-	set_target_properties(
-		application
-		PROPERTIES
-		RUNTIME_OUTPUT_DIRECTORY "../executables/DEBUG/sparkle"
-		LIBRARY_OUTPUT_DIRECTORY "../executables/DEBUG/sparkle"				# Dynamic libraries
-		ARCHIVE_OUTPUT_DIRECTORY "../executables/DEBUG/sparkle/static_libs" 	# Static libraries
-	)
-	set_target_properties(
-		sparkle
-		PROPERTIES
-		RUNTIME_OUTPUT_DIRECTORY "../executables/DEBUG/sparkle"
-		LIBRARY_OUTPUT_DIRECTORY "../executables/DEBUG/sparkle"				# Dynamic libraries
-		ARCHIVE_OUTPUT_DIRECTORY "../executables/DEBUG/sparkle/static_libs" 	# Static libraries
-	)
-	
-	# add_custom_command(
-	# 	TARGET sparkle POST_BUILD
-	# 	COMMAND ${CMAKE_COMMAND} -E copy_if_different
-	# 		"$<TARGET_FILE_DIR:SDL2::SDL2>/SDL2d.dll"
-	# 		$<TARGET_FILE_DIR:sparkle>/"SDL2d.dll"
-	# )
-	# add_custom_command(
-	# 	TARGET sparkle POST_BUILD
-	# 	COMMAND ${CMAKE_COMMAND} -E copy_if_different
-	# 		"$<TARGET_FILE_DIR:SDL2_image::SDL2_image>/SDL2_imaged.dll"
-	# 		$<TARGET_FILE_DIR:sparkle>/"SDL2_imaged.dll"
-	# )
 
 	if(NOT EXISTS ../executables/DEBUG/sparkle/assets/)
 		add_custom_command(
@@ -219,56 +246,28 @@ if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
 			$<TARGET_FILE_DIR:sparkle>/assets
 		)
 	endif()
+
 else()
 
-	set_target_properties(
-		arena
-		PROPERTIES
-		RUNTIME_OUTPUT_DIRECTORY "../executables/RELEASE/sparkle"
-		LIBRARY_OUTPUT_DIRECTORY "../executables/RELEASE/sparkle"				# Dynamic libraries
-		ARCHIVE_OUTPUT_DIRECTORY "../executables/RELEASE/sparkle/static_libs" 	# Static libraries
-	)
-	set_target_properties(
-		background
-		PROPERTIES
-		RUNTIME_OUTPUT_DIRECTORY "../executables/RELEASE/sparkle"
-		LIBRARY_OUTPUT_DIRECTORY "../executables/RELEASE/sparkle"				# Dynamic libraries
-		ARCHIVE_OUTPUT_DIRECTORY "../executables/RELEASE/sparkle/static_libs" 	# Static libraries
-	)
-	set_target_properties(
-		wheel
-		PROPERTIES
-		RUNTIME_OUTPUT_DIRECTORY "../executables/RELEASE/sparkle"
-		LIBRARY_OUTPUT_DIRECTORY "../executables/RELEASE/sparkle"				# Dynamic libraries
-		ARCHIVE_OUTPUT_DIRECTORY "../executables/RELEASE/sparkle/static_libs" 	# Static libraries
-	)
-	set_target_properties(
-		application
-		PROPERTIES
-		RUNTIME_OUTPUT_DIRECTORY "../executables/RELEASE/sparkle"
-		LIBRARY_OUTPUT_DIRECTORY "../executables/RELEASE/sparkle"				# Dynamic libraries
-		ARCHIVE_OUTPUT_DIRECTORY "../executables/RELEASE/sparkle/static_libs" 	# Static libraries
-	)
-	set_target_properties(
-		sparkle
-		PROPERTIES
-		RUNTIME_OUTPUT_DIRECTORY "../executables/RELEASE/sparkle"
-		LIBRARY_OUTPUT_DIRECTORY "../executables/RELEASE/sparkle"				# Dynamic libraries
-		ARCHIVE_OUTPUT_DIRECTORY "../executables/RELEASE/sparkle/static_libs" 	# Static libraries
-	)
+	set_output_properties(arena "RELEASE")
+	set_output_properties(background "RELEASE")
+	set_output_properties(wheel "RELEASE")
+	set_output_properties(textwidget "RELEASE")
+	set_output_properties(application "RELEASE")
+	set_output_properties(sparkle "RELEASE")
 
-	# add_custom_command(
-	# 	TARGET sparkle POST_BUILD
-	# 	COMMAND ${CMAKE_COMMAND} -E copy_if_different
-	# 		"$<TARGET_FILE_DIR:SDL2::SDL2>/SDL2.dll"
-	# 		$<TARGET_FILE_DIR:sparkle>/"SDL2.dll"
-	# )
-	# add_custom_command(
-	# 	TARGET sparkle POST_BUILD
-	# 	COMMAND ${CMAKE_COMMAND} -E copy_if_different
-	# 		"$<TARGET_FILE_DIR:SDL2_image::SDL2_image>/SDL2_image.dll"
-	# 		$<TARGET_FILE_DIR:sparkle>/"SDL2_image.dll"
-	# )
+	add_custom_command(
+		TARGET sparkle POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			"$<TARGET_FILE_DIR:SDL2::SDL2>/SDL2.dll"
+			$<TARGET_FILE_DIR:sparkle>/"SDL2.dll"
+	)
+	add_custom_command(
+		TARGET sparkle POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			"$<TARGET_FILE_DIR:SDL2_image::SDL2_image>/SDL2_image.dll"
+			$<TARGET_FILE_DIR:sparkle>/"SDL2_image.dll"
+	)
 
 	if(NOT EXISTS ../executables/RELEASE/sparkle/assets/)
 			add_custom_command(
@@ -280,28 +279,19 @@ else()
 	endif()
 endif()
 
-# if (MSVC)
-# 	target_compile_options(
-# 		sparkle
-# 		PRIVATE
-# 		/W3
-# 	)
-# elseif(WINDOWS)
-# 	target_compile_options(
-# 		sparkle
-# 		PRIVATE
-# 		-Wall
-# 		-Wextra
-# 		-Wpedantic
-# 		-Wconversion
-# 	)
-# else()
-# target_compile_options(
-# 	sparkle
-# 	PRIVATE
-# 	-Wall
-# 	-Wextra
-# 	-Wpedantic
-# 	-Wconversion
-# )
-# endif()
+if (CMAKE_GENERATOR MATCHES "Visual Studio .*")
+	target_compile_options(
+		sparkle
+		PRIVATE
+		/W3
+	)
+else()
+	# target_compile_options(
+	# 	sparkle
+	# 	PRIVATE
+	# 	-Wall
+	# 	-Wextra
+	# 	-Wpedantic
+	# 	-Wconversion
+	# )
+endif()

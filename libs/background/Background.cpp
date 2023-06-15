@@ -1,5 +1,7 @@
 #include "Background.hpp"
 
+#include <iostream>
+
 Background::Background(SDL_Renderer* parent, unsigned int width, unsigned int height)
 {
 	// catch renderer

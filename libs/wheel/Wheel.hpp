@@ -12,8 +12,6 @@
 
 #endif
 
-#include <iostream>
-
 #include "WheelUtils.hpp"
 
 enum Direction

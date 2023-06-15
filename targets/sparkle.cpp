@@ -1,9 +1,9 @@
 // We have to use WinMain(...) for GUI application in the Windows OS
 #ifdef _WIN32
+
 #define SDL_MAIN_HANDLED
-#include <SDL.h>
-//
-#include <SDL_image.h>
+// #include <SDL.h>
+// #include <SDL_image.h>
 #include <windows.h>
 
 // Declaring main here because we want to call it from the WinMain(...)
@@ -46,12 +46,13 @@ int CALLBACK WinMain(
 #else
 // You are lucky if you run this on the Unix or MacOS,
 //  because GUI application can be created in the main(...) there
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
+// #include <SDL2/SDL.h>
+// #include <SDL2/SDL_image.h>
 #endif
 
-#include <iostream>
+// #include <iostream>
 
+// SDL libraries here
 #include "WheelGameApplication.hpp"
 
 int main(int argc, char* argv[])

@@ -4,8 +4,9 @@
 
 namespace WUtils
 {
-	static std::string _backgroundPath{ "assets/carbon-background.png" };
-	static std::string _wheelPath{ "assets/light-no-back.png" };
+	static std::string _backgroundPath{ "assets/images/carbon-background.png" };
+	static std::string _wheelPath{ "assets/images/light-no-back.png" };
+	static std::string _FPSfont{ "assets/fonts/cheese.ttf" };
 
 	struct Size
 	{
@@ -13,6 +14,6 @@ namespace WUtils
 		unsigned int _height;
 	};
 
-	static Size _minArena{ 250, 220 };
+	static Size _minArena{ 320, 240 };
 	static Size _wheel{ 100, 88 };
 }	 // namespace WUtils

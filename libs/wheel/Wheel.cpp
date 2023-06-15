@@ -1,6 +1,7 @@
 #include "Wheel.hpp"
 
 #include <chrono>
+#include <iostream>
 
 Wheel::Wheel(SDL_Renderer* parent, unsigned int width, unsigned int height)
 {
@@ -202,20 +203,10 @@ void Wheel::bounce(const int& coordinate, const Direction& flow)
 
 void Wheel::adjustPosition(const int& addX, const int& addY)
 {
-	if (_thick > 0)
-	{
-		std::cout << "adjuct, thick = " << (int)_thick											//
-				  << ", {" << _rectangle.X() << ", " << _rectangle.Y() << "}." << std::endl;	//
-		_rectangle.setX(_rectangle.X() + addX);
-		_rectangle.setY(_rectangle.Y() + addY);
-	}
-	else
-	{
-		std::cout << "adjuct, thick = " << (int)_thick											//
-				  << ", {" << _rectangle.X() << ", " << _rectangle.Y() << "}." << std::endl;	//
-		_rectangle.setX(_rectangle.X() - addX);
-		_rectangle.setY(_rectangle.Y() - addY);
-	}
+	std::cout << "adjuct, thick = " << (int)_thick											//
+			  << ", {" << _rectangle.X() << ", " << _rectangle.Y() << "}." << std::endl;	//
+	_rectangle.setX(_rectangle.X() + _thick * addX);
+	_rectangle.setY(_rectangle.Y() + _thick * addY);
 }
 
 void Wheel::MoveDeltas::debug_data() const

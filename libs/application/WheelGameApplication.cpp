@@ -1,5 +1,7 @@
 #include "WheelGameApplication.hpp"
 
+#include <iostream>
+
 WheelGameApplication::WheelGameApplication(int argc, char* argv[])
 {
 	// take optional arguments with window size
@@ -46,6 +48,10 @@ WheelGameApplication::WheelGameApplication(int argc, char* argv[])
 
 	// build wheel with initial size
 	_wheel = new Wheel(_gRenderer, WUtils::_wheel._width, WUtils::_wheel._height);
+
+	// build fps screen text
+	_fpsScreen =
+		new TextWidget(_gRenderer, "FPS: XXX.XXX", WUtils::_FPSfont.c_str(), 14, 50, 10, SDL_Color(50, 50, 50));
 }
 
 WheelGameApplication::~WheelGameApplication()
@@ -53,6 +59,11 @@ WheelGameApplication::~WheelGameApplication()
 	// destroy resources
 	SDL_DestroyRenderer(_gRenderer);
 	SDL_DestroyWindow(_gWindow);
+
+	// deallocate heap memory
+	delete _wheel;
+	delete _arena;
+	delete _background;
 
 	//
 	SDL_Quit();
@@ -75,6 +86,14 @@ void WheelGameApplication::initializeSDL()
 	if (_callingStatus == 0)
 	{
 		std::cout << "Couldn't load SDL_Image dynamic libraries...\n";
+		return;
+	}
+
+	// Initialize SDL_ttf library
+	_callingStatus = TTF_Init();
+	if (_callingStatus != 0)
+	{
+		std::cout << "Couldn't load SDL_ttf dynamic libraries...\n";
 		return;
 	}
 }
@@ -101,9 +120,9 @@ void WheelGameApplication::clampObjects(Arena* pArena, Wheel* pWheel)
 	{
 		if (_firstTimeEnter)
 		{
-			pWheel->adjustPosition(5, 5);
+			pWheel->adjustPosition(1, 1);
 
-			if (pArena->moveWheelCW(5))
+			if (pArena->moveWheelCW(20))
 				pWheel->setThick(1);
 			else
 				pWheel->setThick(-1);
@@ -153,6 +172,9 @@ void WheelGameApplication::gamePlay()
 
 		// draw arena
 		_arena->draw();
+
+		// draw fps screen
+		_fpsScreen->draw();
 
 		// Show everything that was rendered
 		SDL_RenderPresent(_gRenderer);

@@ -8,10 +8,10 @@ Arena::Arena(SDL_Renderer* parent, unsigned int width, unsigned int height)
 	_parent = parent;
 
 	// implement parsed size for background
-	_rectangle.x = 10;
-	_rectangle.y = 10;
-	_rectangle.w = width - 20;
-	_rectangle.h = height - 20;
+	_rectangle.x = 40;
+	_rectangle.y = 40;
+	_rectangle.w = width - 80;
+	_rectangle.h = height - 80;
 
 	// we will used it as max
 	_rectangleMax = _rectangle;
@@ -29,6 +29,8 @@ Arena::Arena(SDL_Renderer* parent, unsigned int width, unsigned int height)
 Arena::~Arena()
 {
 	_parent = nullptr;
+
+	// deallocate heap memory
 	delete _color;
 }
 

@@ -6,4 +6,5 @@
 #     $filePath
 # };
 
+# .\executables\DEBUG\sparkle\Debug\sparkle.exe
 .\executables\DEBUG\sparkle\sparkle.exe

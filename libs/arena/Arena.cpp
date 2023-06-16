@@ -78,6 +78,8 @@ bool Arena::moveWheelCW(const int& value)
 		// wheel->setThick(-1);
 		return false;
 	}
+
+	return false;
 }
 
 bool Arena::isShrinking() const { return _shrink; }

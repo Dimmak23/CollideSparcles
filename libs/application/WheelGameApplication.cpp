@@ -50,8 +50,8 @@ WheelGameApplication::WheelGameApplication(int argc, char* argv[])
 	_wheel = new Wheel(_gRenderer, WUtils::_wheel._width, WUtils::_wheel._height);
 
 	// build fps screen text
-	// _fpsScreen =
-	// 	new TextWidget(_gRenderer, "FPS: XXX.XXX", WUtils::_FPSfont.c_str(), 14, 50, 10, SDL_Color(50, 50, 50));
+	_fpsScreen =
+		new TextWidget(_gRenderer, "FPS: XXX.XXX", WUtils::_FPSfont.c_str(), 14, 50, 10, SDL_Color(50, 50, 50));
 }
 
 WheelGameApplication::~WheelGameApplication()
@@ -89,13 +89,13 @@ void WheelGameApplication::initializeSDL()
 		return;
 	}
 
-	// // Initialize SDL_ttf library
-	// _callingStatus = TTF_Init();
-	// if (_callingStatus != 0)
-	// {
-	// 	std::cout << "Couldn't load SDL_ttf dynamic libraries...\n";
-	// 	return;
-	// }
+	// Initialize SDL_ttf library
+	_callingStatus = TTF_Init();
+	if (_callingStatus != 0)
+	{
+		std::cout << "Couldn't load SDL_ttf dynamic libraries...\n";
+		return;
+	}
 }
 
 void WheelGameApplication::clampObjects(Arena* pArena, Wheel* pWheel)
@@ -174,7 +174,7 @@ void WheelGameApplication::gamePlay()
 		_arena->draw();
 
 		// draw fps screen
-		// _fpsScreen->draw();
+		_fpsScreen->draw();
 
 		// Show everything that was rendered
 		SDL_RenderPresent(_gRenderer);

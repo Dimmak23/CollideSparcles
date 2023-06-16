@@ -1,3 +1,5 @@
+#include <iostream>
+
 // We have to use WinMain(...) for GUI application in the Windows OS
 #ifdef _WIN32
 
@@ -35,10 +37,10 @@ int CALLBACK WinMain(
 	*/
 	int nCmdShow)
 {
-	// std::cout << hInstance << '\n';
-	// std::cout << hPrevInstance << '\n';
-	// std::cout << pCmdLine << '\n';
-	// std::cout << nCmdShow << '\n';
+	std::cout << hInstance << '\n';
+	std::cout << hPrevInstance << '\n';
+	std::cout << pCmdLine << '\n';
+	std::cout << nCmdShow << '\n';
 
 	// Now we call the main function
 	return main(__argc, __argv);
@@ -53,7 +55,7 @@ int CALLBACK WinMain(
 // #include <iostream>
 
 // SDL libraries here
-#include "../libs/application/WheelGameApplication.hpp"
+#include "WheelGameApplication.hpp"
 
 int main(int argc, char* argv[])
 {

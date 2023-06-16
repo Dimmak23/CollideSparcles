@@ -12,7 +12,7 @@
 
 #endif
 
-#include "../utilities/WheelUtils.hpp"
+#include "WheelUtils.hpp"
 
 class Background
 {

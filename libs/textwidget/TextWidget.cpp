@@ -19,21 +19,21 @@ TextWidget::TextWidget(SDL_Renderer* parent, const char* message, const char* fo
 	_posX = posX;
 	_posY = posY;
 
-	// Load the font
-	_font = TTF_OpenFont(fontPath, _size);
+	// // Load the font
+	// _font = TTF_OpenFont("assets/fonts/cheese.ttf", _size);
 
-	// Render text to an SDL_Surface
-	SDL_Surface* surfaceMessage = TTF_RenderText_Solid(_font, message, foregroundColor);
+	// // Render text to an SDL_Surface
+	// SDL_Surface* surfaceMessage = TTF_RenderText_Solid(_font, "HIIIIIIIII", foregroundColor);
 
-	// Create an SDL_Texture from the SDL_Surface
-	_text = SDL_CreateTextureFromSurface(_parent, surfaceMessage);
+	// // Create an SDL_Texture from the SDL_Surface
+	// _text = SDL_CreateTextureFromSurface(_parent, surfaceMessage);
 
-	// Get the dimensions of the rendered text
-	_textWidth = surfaceMessage->w;
-	_textHeight = surfaceMessage->h;
+	// // Get the dimensions of the rendered text
+	// _textWidth = surfaceMessage->w;
+	// _textHeight = surfaceMessage->h;
 
-	// Free the SDL_Surface as it is no longer needed
-	SDL_FreeSurface(surfaceMessage);
+	// // Free the SDL_Surface as it is no longer needed
+	// SDL_FreeSurface(surfaceMessage);
 }
 
 TextWidget::~TextWidget()
@@ -47,6 +47,22 @@ TextWidget::~TextWidget()
 
 int TextWidget::draw()
 {
+	// Load the font
+	_font = TTF_OpenFont("assets/fonts/cheese.ttf", _size);
+
+	// Render text to an SDL_Surface
+	SDL_Surface* surfaceMessage = TTF_RenderText_Solid(_font, "HIIIIIIIII", SDL_Color(255, 50, 125));
+
+	// Create an SDL_Texture from the SDL_Surface
+	_text = SDL_CreateTextureFromSurface(_parent, surfaceMessage);
+
+	// Get the dimensions of the rendered text
+	_textWidth = surfaceMessage->w;
+	_textHeight = surfaceMessage->h;
+
+	// Free the SDL_Surface as it is no longer needed
+	SDL_FreeSurface(surfaceMessage);
+
 	//
 	SDL_Rect textRect;
 	textRect.x = _posX;
@@ -55,8 +71,10 @@ int TextWidget::draw()
 	textRect.h = _textHeight;
 
 	// Render the text texture onto the screen
-	SDL_RenderCopy(_parent, _text, NULL, &textRect);
+	int temp = SDL_RenderCopy(_parent, _text, NULL, &textRect);
 
 	// Clean up the message texture
 	SDL_DestroyTexture(_text);
+
+	return temp;
 }

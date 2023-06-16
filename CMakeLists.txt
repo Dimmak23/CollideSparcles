@@ -69,6 +69,8 @@ FetchContent_MakeAvailable(SDL2_ttf)
 
 endif()
 
+message("FOUND DIRECTORY FOR SDL2_ttf: " ${SDL2_TTF_INCLUDE_DIRS})
+
 # Actual usage will be kept for every target in the separate file
 # 'targets' - all targets here
 
@@ -80,6 +82,7 @@ set(INCLUDES "${CMAKE_SOURCE_DIR}/tested_headers")
 # Starting point for all libraries, every single of them will be added
 # explicitly with modificator (PRIVATE, PUBLIC, INTERFACE)
 set(LIBRARIES "${CMAKE_SOURCE_DIR}/libs")
+
 set(LIB_ARENA "${LIBRARIES}/arena")
 set(LIB_BACK "${LIBRARIES}/background")
 set(LIB_WHEEL "${LIBRARIES}/wheel")
@@ -88,6 +91,8 @@ set(LIB_APPLICATION "${LIBRARIES}/application")
 set(UTILS "${LIBRARIES}/utilities")
 
 set(LIB_TYPE "SHARED")
+
+include_directories(${UTILS})
 
 # Create separate module for the arena projectile
 add_library(
@@ -98,7 +103,7 @@ add_library(
 target_include_directories(
 	arena
 	PRIVATE ${LIB_ARENA}
-	PRIVATE ${UTILS}
+	PUBLIC ${UTILS}
 )
 target_link_libraries(
 	arena
@@ -115,7 +120,7 @@ add_library(
 target_include_directories(
 	background
 	PRIVATE ${LIB_BACK}
-	PRIVATE ${UTILS}
+	PUBLIC ${UTILS}
 )
 target_link_libraries(
 	background
@@ -132,7 +137,7 @@ add_library(
 target_include_directories(
 	wheel
 	PRIVATE ${LIB_WHEEL}
-	PRIVATE ${UTILS}
+	PUBLIC ${UTILS}
 )
 target_link_libraries(
 	wheel
@@ -149,7 +154,7 @@ add_library(
 target_include_directories(
 	textwidget
 	PRIVATE ${LIB_TWIDGET}
-	PRIVATE ${SDL2_TTF_INCLUDE_DIRS}
+	# PRIVATE ${SDL2_TTF_INCLUDE_DIRS}
 	# PRIVATE ${FREETYPE_INCLUDE_DIRS}
 )
 target_link_libraries(
@@ -170,9 +175,9 @@ target_include_directories(
 	PUBLIC ${LIB_ARENA}
 	PUBLIC ${LIB_BACK}
 	PUBLIC ${LIB_WHEEL}
-	PUBLIC ${LIB_TWIDGET}
 	PUBLIC ${UTILS}
-	PUBLIC ${SDL2_TTF_INCLUDE_DIRS}
+	PUBLIC ${LIB_TWIDGET}
+	# PUBLIC ${SDL2_TTF_INCLUDE_DIRS}
 	# PUBLIC ${FREETYPE_INCLUDE_DIRS}
 )
 target_link_libraries(
@@ -219,24 +224,24 @@ if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
 	set_output_properties(application "DEBUG")
 	set_output_properties(sparkle "DEBUG")
 	
-	add_custom_command(
-		TARGET sparkle POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy_if_different
-			"$<TARGET_FILE_DIR:SDL2::SDL2>/SDL2d.dll"
-			$<TARGET_FILE_DIR:sparkle>/"SDL2d.dll"
-	)
-	add_custom_command(
-		TARGET sparkle POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy_if_different
-			"$<TARGET_FILE_DIR:SDL2_image::SDL2_image>/SDL2_imaged.dll"
-			$<TARGET_FILE_DIR:sparkle>/"SDL2_imaged.dll"
-	)
-	add_custom_command(
-		TARGET sparkle POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy_if_different
-			"$<TARGET_FILE_DIR:SDL2_ttf::SDL2_ttf>/SDL2_ttfd.dll"
-			$<TARGET_FILE_DIR:sparkle>/"SDL2_ttfd.dll"
-	)
+	# add_custom_command(
+	# 	TARGET sparkle POST_BUILD
+	# 	COMMAND ${CMAKE_COMMAND} -E copy_if_different
+	# 		"$<TARGET_FILE_DIR:SDL2::SDL2>/SDL2d.dll"
+	# 		$<TARGET_FILE_DIR:sparkle>/"SDL2d.dll"
+	# )
+	# add_custom_command(
+	# 	TARGET sparkle POST_BUILD
+	# 	COMMAND ${CMAKE_COMMAND} -E copy_if_different
+	# 		"$<TARGET_FILE_DIR:SDL2_image::SDL2_image>/SDL2_imaged.dll"
+	# 		$<TARGET_FILE_DIR:sparkle>/"SDL2_imaged.dll"
+	# )
+	# add_custom_command(
+	# 	TARGET sparkle POST_BUILD
+	# 	COMMAND ${CMAKE_COMMAND} -E copy_if_different
+	# 		"$<TARGET_FILE_DIR:SDL2_ttf::SDL2_ttf>/SDL2_ttfd.dll"
+	# 		$<TARGET_FILE_DIR:sparkle>/"SDL2_ttfd.dll"
+	# )
 
 	if(NOT EXISTS ../executables/DEBUG/sparkle/assets/)
 		add_custom_command(
@@ -256,18 +261,18 @@ else()
 	set_output_properties(application "RELEASE")
 	set_output_properties(sparkle "RELEASE")
 
-	add_custom_command(
-		TARGET sparkle POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy_if_different
-			"$<TARGET_FILE_DIR:SDL2::SDL2>/SDL2.dll"
-			$<TARGET_FILE_DIR:sparkle>/"SDL2.dll"
-	)
-	add_custom_command(
-		TARGET sparkle POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy_if_different
-			"$<TARGET_FILE_DIR:SDL2_image::SDL2_image>/SDL2_image.dll"
-			$<TARGET_FILE_DIR:sparkle>/"SDL2_image.dll"
-	)
+	# add_custom_command(
+	# 	TARGET sparkle POST_BUILD
+	# 	COMMAND ${CMAKE_COMMAND} -E copy_if_different
+	# 		"$<TARGET_FILE_DIR:SDL2::SDL2>/SDL2.dll"
+	# 		$<TARGET_FILE_DIR:sparkle>/"SDL2.dll"
+	# )
+	# add_custom_command(
+	# 	TARGET sparkle POST_BUILD
+	# 	COMMAND ${CMAKE_COMMAND} -E copy_if_different
+	# 		"$<TARGET_FILE_DIR:SDL2_image::SDL2_image>/SDL2_image.dll"
+	# 		$<TARGET_FILE_DIR:sparkle>/"SDL2_image.dll"
+	# )
 
 	if(NOT EXISTS ../executables/RELEASE/sparkle/assets/)
 			add_custom_command(
@@ -286,12 +291,12 @@ if (CMAKE_GENERATOR MATCHES "Visual Studio .*")
 		/W3
 	)
 else()
-	# target_compile_options(
-	# 	sparkle
-	# 	PRIVATE
-	# 	-Wall
-	# 	-Wextra
-	# 	-Wpedantic
-	# 	-Wconversion
-	# )
+	target_compile_options(
+		sparkle
+		PRIVATE
+		-Wall
+		-Wextra
+		-Wpedantic
+		-Wconversion
+	)
 endif()

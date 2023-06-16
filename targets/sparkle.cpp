@@ -53,7 +53,7 @@ int CALLBACK WinMain(
 // #include <iostream>
 
 // SDL libraries here
-#include "WheelGameApplication.hpp"
+#include "../libs/application/WheelGameApplication.hpp"
 
 int main(int argc, char* argv[])
 {

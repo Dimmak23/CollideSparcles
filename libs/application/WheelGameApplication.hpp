@@ -10,14 +10,14 @@
 
 // #include <SDL2/SDL.h>
 // #include <SDL2/SDL_image.h>
-// #include <SDL2/SDL_ttf.h>
+// // #include <SDL2/SDL_ttf.h>
 
 // #endif
 
-#include "Arena.hpp"
-#include "Background.hpp"
-#include "TextWidget.hpp"
-#include "Wheel.hpp"
+#include "../arena/Arena.hpp"
+#include "../background/Background.hpp"
+// #include "TextWidget.hpp"
+#include "../wheel/Wheel.hpp"
 
 class WheelGameApplication
 {
@@ -54,7 +54,7 @@ private:
 	Background* _background{ nullptr };
 	Arena* _arena{ nullptr };
 	Wheel* _wheel{ nullptr };
-	TextWidget* _fpsScreen{ nullptr };
+	// TextWidget* _fpsScreen{ nullptr };
 
 	// keeping track on the status of the creation
 	bool _callingStatus{ false };

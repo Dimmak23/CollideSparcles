@@ -2,4 +2,4 @@ build
 executables
 .vscode
 manual*.MD
-third-party
+third_party

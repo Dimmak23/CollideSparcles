@@ -1,1 +1,1 @@
-cmake --build build --target sparkle -j 8 -v
+cmake --build build --target sparcle -j 8 -v

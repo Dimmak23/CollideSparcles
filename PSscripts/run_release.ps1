@@ -7,4 +7,4 @@
 #     $filePath;
 # };
 
-.\executables\RELEASE\sparkle\sparkle.exe
+.\executables\RELEASE\sparcle\sparcle.exe

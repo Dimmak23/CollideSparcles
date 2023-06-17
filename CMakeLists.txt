@@ -2,7 +2,7 @@
 # CMAKE_CXX_STANDARD requires 3.12 and the convenience function
 # `FetchContent_MakeAvailable` was introduced in CMake 3.14
 cmake_minimum_required(VERSION 3.14.0)
-project(SparklesGame VERSION 0.0.1)
+project(SparclesGame VERSION 0.0.1)
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
@@ -199,22 +199,24 @@ set_specific_definitions(
 
 # create executable
 add_executable(
-	sparkle
-	targets/sparkle.cpp
+	sparcle
+	targets/sparcle.cpp
 )
 
 # linking all necessary libraries
 target_link_libraries(
-	sparkle
+	sparcle
 	PRIVATE application
 )
 set_specific_definitions(
-	sparkle
+	sparcle
 )
+
+set(MAIN sparcle)
 
 if(CMAKE_GENERATOR MATCHES "Visual Studio .*")
 	target_compile_options(
-		sparkle
+		sparcle
 		PRIVATE
 		/W3
 		/Wall
@@ -223,7 +225,7 @@ if(CMAKE_GENERATOR MATCHES "Visual Studio .*")
 	)
 else()
 	target_compile_options(
-		sparkle
+		sparcle
 		PRIVATE
 		-Wall
 		-Wextra
@@ -238,7 +240,7 @@ endif()
 
 # Define a function to set common target properties
 function(set_output_properties TARGET) # BUILD_TYPE == DEBUG || RELEASE
-	set(COMMON_FOLDER "../executables/${CMAKE_BUILD_TYPE}/sparkle")
+	set(COMMON_FOLDER "../executables/${CMAKE_BUILD_TYPE}/${MAIN}")
 
 	set_target_properties(
 		${TARGET}
@@ -256,15 +258,15 @@ function(set_properties_for_all)
 	set_output_properties(wheel)
 	set_output_properties(textwidget)
 	set_output_properties(application)
-	set_output_properties(sparkle)
+	set_output_properties(sparcle)
 
 	# Take assets with them
-	if(NOT EXISTS ../executables/${CMAKE_BUILD_TYPE}/sparkle/assets/)
+	if(NOT EXISTS ../executables/${CMAKE_BUILD_TYPE}/${MAIN}/assets/)
 		add_custom_command(
-			TARGET sparkle POST_BUILD
+			TARGET ${MAIN} POST_BUILD
 			COMMAND ${CMAKE_COMMAND} -E copy_directory
 			${CMAKE_SOURCE_DIR}/assets
-			$<TARGET_FILE_DIR:sparkle>/assets
+			$<TARGET_FILE_DIR:${MAIN}>/assets
 		)
 	endif()
 endfunction()
@@ -291,7 +293,7 @@ if(WIN32) # ! Why Linux don't need it?
 		)
 	endfunction()
 
-	copy_dll(sparkle SDL2)
-	copy_dll(sparkle SDL2_image)
-	copy_dll(sparkle SDL2_ttf)
+	copy_dll(sparcle SDL2)
+	copy_dll(sparcle SDL2_image)
+	copy_dll(sparcle SDL2_ttf)
 endif()

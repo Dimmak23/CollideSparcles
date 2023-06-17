@@ -6,7 +6,8 @@ namespace WUtils
 {
 	static std::string _backgroundPath{ "assets/images/carbon-background.png" };
 	static std::string _wheelPath{ "assets/images/light-no-back.png" };
-	static std::string _FPSfont{ "assets/fonts/cheese.ttf" };
+	static std::string _FPSfont_small{ "assets/fonts/small_tech.ttf" };
+	static std::string _FPSfont_pixel{ "assets/fonts/pixeled.ttf" };
 
 	struct Size
 	{

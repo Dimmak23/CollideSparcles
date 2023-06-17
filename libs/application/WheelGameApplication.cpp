@@ -50,8 +50,9 @@ WheelGameApplication::WheelGameApplication(int argc, char* argv[])
 	_wheel = new Wheel(_gRenderer, WUtils::_wheel._width, WUtils::_wheel._height);
 
 	// build fps screen text
-	_fpsScreen =
-		new TextWidget(_gRenderer, "FPS: XXX.XXX", WUtils::_FPSfont.c_str(), 14, 50, 10, SDL_Color(50, 50, 50));
+	_fpsScreen = new TextWidget(_gRenderer);
+	// build fps screen text
+	_legend = new TextWidget(_gRenderer);
 }
 
 WheelGameApplication::~WheelGameApplication()
@@ -61,12 +62,17 @@ WheelGameApplication::~WheelGameApplication()
 	SDL_DestroyWindow(_gWindow);
 
 	// deallocate heap memory
+	delete _fpsScreen;
 	delete _wheel;
 	delete _arena;
 	delete _background;
 
 	//
 	SDL_Quit();
+	//
+	IMG_Quit();
+	// Quit SDL_ttf library
+	TTF_Quit();
 }
 
 void WheelGameApplication::initializeSDL()
@@ -138,6 +144,15 @@ void WheelGameApplication::clampObjects(Arena* pArena, Wheel* pWheel)
 
 void WheelGameApplication::gamePlay()
 {
+	_fpsScreen->setFont(WUtils::_FPSfont_pixel, 14);
+	_fpsScreen->setColor(std::move(SDL_Color{ 255, 12, 145 }));
+	_fpsScreen->setPostion(10, 10);
+
+	_legend->setFont(WUtils::_FPSfont_small, 14);
+	_legend->setColor(std::move(SDL_Color{ 52, 63, 255 }));
+	_legend->setPostion(10, _appHeight - 15);
+	_legend->setMessage(std::move(std::string("DimmaK productions, june 2023.")));
+
 	// Event handling
 	SDL_Event eventIns;
 
@@ -176,6 +191,9 @@ void WheelGameApplication::gamePlay()
 		// draw fps screen
 		_fpsScreen->draw();
 
+		// draw legend
+		_legend->draw();
+
 		// Show everything that was rendered
 		SDL_RenderPresent(_gRenderer);
 
@@ -197,6 +215,17 @@ void WheelGameApplication::gamePlay()
 			}
 		}
 
-		if (_running) SDL_Delay(2);
+		if (_running) SDL_Delay(4);
+
+		// Update and print FPS
+		static Uint32 previousTime = SDL_GetTicks64();
+		Uint32 currentTime = SDL_GetTicks64();
+
+		float deltaTime = (currentTime - previousTime) / 1000.0f;
+		previousTime = currentTime;
+
+		float fps = 1.0f / deltaTime;
+		// std::cout << "FPS: " << fps << '\n';
+		_fpsScreen->setMessage(std::move("FPS: " + std::to_string((int)fps)));
 	}
 }

@@ -1,19 +1,5 @@
 #pragma once
 
-// #ifdef _WIN32
-
-// #include <SDL.h>
-// #include <SDL_image.h>
-// // #include "SDL_ttf.h"
-
-// #else
-
-// #include <SDL2/SDL.h>
-// #include <SDL2/SDL_image.h>
-// // #include <SDL2/SDL_ttf.h>
-
-// #endif
-
 #include "Arena.hpp"
 #include "Background.hpp"
 #include "TextWidget.hpp"
@@ -40,8 +26,8 @@ private:
 	// Dimensions
 	unsigned int _appXPos{ 100 };
 	unsigned int _appYPos{ 100 };
-	unsigned int _appWidth{ 640 };
-	unsigned int _appHeight{ 480 };
+	unsigned int _appWidth{ 1600 };
+	unsigned int _appHeight{ 800 };
 
 	// Graphics
 	SDL_Window* _gWindow{ nullptr };
@@ -57,6 +43,8 @@ private:
 
 	//
 	TextWidget* _fpsScreen{ nullptr };
+	//
+	TextWidget* _legend{ nullptr };
 
 	// keeping track on the status of the creation
 	bool _callingStatus{ false };

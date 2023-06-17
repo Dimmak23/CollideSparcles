@@ -1,57 +1,33 @@
 #include "TextWidget.hpp"
 
-TextWidget::TextWidget(SDL_Renderer* parent, const char* message, const char* fontPath, const unsigned int& size,
-					   const unsigned int& posX, const unsigned int& posY, const SDL_Color& foregroundColor)
+#include <iostream>
+
+TextWidget::TextWidget(SDL_Renderer* parent)
 {
 	// catch renderer
 	_parent = parent;
-
-	// Do we keep all of this?
-	//
-	// message???
-	//
-	// fontPath???
-	//
-	// foreGroundColor???
-
-	//
-	_size = size;
-	_posX = posX;
-	_posY = posY;
-
-	// // Load the font
-	// _font = TTF_OpenFont("assets/fonts/cheese.ttf", _size);
-
-	// // Render text to an SDL_Surface
-	// SDL_Surface* surfaceMessage = TTF_RenderText_Solid(_font, "HIIIIIIIII", foregroundColor);
-
-	// // Create an SDL_Texture from the SDL_Surface
-	// _text = SDL_CreateTextureFromSurface(_parent, surfaceMessage);
-
-	// // Get the dimensions of the rendered text
-	// _textWidth = surfaceMessage->w;
-	// _textHeight = surfaceMessage->h;
-
-	// // Free the SDL_Surface as it is no longer needed
-	// SDL_FreeSurface(surfaceMessage);
 }
 
+// Destroy allocated resources
 TextWidget::~TextWidget()
 {
+	//
+	SDL_DestroyTexture(_text);
 	// Close the font
 	TTF_CloseFont(_font);
-
-	// Quit SDL_ttf library
-	TTF_Quit();
+	//
+	_parent = nullptr;
 }
 
 int TextWidget::draw()
 {
-	// Load the font
-	_font = TTF_OpenFont("assets/fonts/cheese.ttf", _size);
-
+	if (_font == nullptr)
+	{
+		// std::cout << "We didn't succeed with loading font...\n";
+		return -2;
+	}
 	// Render text to an SDL_Surface
-	SDL_Surface* surfaceMessage = TTF_RenderText_Solid(_font, "HIIIIIIIII", SDL_Color(255, 50, 125));
+	SDL_Surface* surfaceMessage = TTF_RenderText_Solid(_font, _message.c_str(), _color);
 
 	// Create an SDL_Texture from the SDL_Surface
 	_text = SDL_CreateTextureFromSurface(_parent, surfaceMessage);
@@ -78,3 +54,31 @@ int TextWidget::draw()
 
 	return temp;
 }
+
+void TextWidget::setFont(std::string fontPath, unsigned int&& size)
+{
+	//
+	_fontPath = fontPath;	 //! can only pass by value from static std::string
+	//
+	_size = std::move(size);
+	// Load the font
+	_font = TTF_OpenFont(_fontPath.c_str(), _size);
+	if (!_font)
+	{
+		std::cout << "No font loaded\n";
+		std::cout << "_fontPath: " << _fontPath << '\n';
+		std::cout << "_size: " << _size << '\n';
+	}
+}
+
+void TextWidget::setSize(unsigned int&& size) { _size = std::move(size); }
+
+void TextWidget::setColor(SDL_Color&& color) { _color = std::move(color); }
+
+void TextWidget::setPostion(const unsigned int& posX, const unsigned int& posY)
+{
+	_posX = posX;
+	_posY = posY;
+}
+
+void TextWidget::setMessage(std::string&& message) { _message = std::move(message); }

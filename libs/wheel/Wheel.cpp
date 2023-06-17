@@ -57,8 +57,8 @@ void Wheel::changeOpacity() { _opacity = static_cast<unsigned char>(_opacity + _
 void Wheel::implementMovement()
 {
 	//
-	std::cout << "adjuct, thick = " << (int)_thick											//
-			  << ", {" << _rectangle.X() << ", " << _rectangle.Y() << "}." << std::endl;	//
+	// std::cout << "adjuct, thick = " << (int)_thick											//
+	// 		  << ", {" << _rectangle.X() << ", " << _rectangle.Y() << "}." << std::endl;	//
 
 	_rectangle += _delta;
 }
@@ -149,9 +149,9 @@ int Wheel::draw()
 void Wheel::debug_data()
 {
 	//
-	const auto now = std::chrono::system_clock::now();
-	const std::time_t t_c = std::chrono::system_clock::to_time_t(now);
-	std::cout << "The system clock is currently at " << std::ctime(&t_c);
+	// const auto now = std::chrono::system_clock::now();
+	// const std::time_t t_c = std::chrono::system_clock::to_time_t(now);
+	// std::cout << "The system clock is currently at " << std::ctime(&t_c);
 
 	std::cout << "thick: " << (int)_thick << std::endl;
 	_delta.debug_data();
@@ -203,8 +203,8 @@ void Wheel::bounce(const int& coordinate, const Direction& flow)
 
 void Wheel::adjustPosition(const int& addX, const int& addY)
 {
-	std::cout << "adjuct, thick = " << (int)_thick											//
-			  << ", {" << _rectangle.X() << ", " << _rectangle.Y() << "}." << std::endl;	//
+	// std::cout << "adjuct, thick = " << (int)_thick											//
+	// 		  << ", {" << _rectangle.X() << ", " << _rectangle.Y() << "}." << std::endl;	//
 	_rectangle.setX(_rectangle.X() + _thick * addX);
 	_rectangle.setY(_rectangle.Y() + _thick * addY);
 }

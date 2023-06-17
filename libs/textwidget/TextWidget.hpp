@@ -14,22 +14,20 @@
 
 #endif
 
-// #include <string>
+#include <string>
 
 class TextWidget
 {
 public:
-	TextWidget(												   //
-		SDL_Renderer* parent,								   //
-		const char* message,								   //
-		const char* fontPath,								   //
-		const unsigned int& size,							   //
-		const unsigned int& posX, const unsigned int& posY,	   //
-		const SDL_Color& foregroundColor					   //
-	);
+	TextWidget(SDL_Renderer* parent);
 	~TextWidget();
 
 	int draw();
+	void setFont(std::string fontPath, unsigned int&& size);
+	void setSize(unsigned int&& size);
+	void setColor(SDL_Color&& color);
+	void setPostion(const unsigned int& posX, const unsigned int& posY);
+	void setMessage(std::string&& message);
 
 private:
 	// let's deprecate copying text object
@@ -38,10 +36,15 @@ private:
 
 	SDL_Renderer* _parent{ nullptr };
 
-	SDL_Texture* _text{ nullptr };
-	TTF_Font* _font{ nullptr };
+	std::string _fontPath;
 
 	unsigned int _size;
+	SDL_Color _color;
+
+	std::string _message{ "EMPTY" };
+
+	SDL_Texture* _text{ nullptr };
+	TTF_Font* _font{ nullptr };
 
 	unsigned int _textWidth{};
 	unsigned int _textHeight{};

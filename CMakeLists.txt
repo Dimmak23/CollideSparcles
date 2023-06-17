@@ -5,79 +5,64 @@ cmake_minimum_required(VERSION 3.14.0)
 project(SparklesGame VERSION 0.0.1)
 
 set(CMAKE_C_STANDARD 11)
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Tell that on Windows OS we want to build a GUI application
-if(WIN32)
+# ? Why this function don't work?
+# function(generator_flag DEBUG_FLAGS RELEASE_FLAGS)
+# if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+# set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${DEBUG_FLAGS}") # Show console with debug information
+# else()
+# set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${RELEASE_FLAGS}") # Disable console appearence
+# endif()
+# endfunction()
 
-	if (CMAKE_GENERATOR MATCHES "Visual Studio .*")
-		# set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS") # Disable console appearence
+# if(NOT UNIX AND NOT CMAKE_MACOSX_BUNDLE) # ! What about Linux?
+if(CMAKE_GENERATOR MATCHES "Visual Studio .*")
+	# generator_flag("/SUBSYSTEM:CONSOLE" "/SUBSYSTEM:WINDOWS")
+	if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
 		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:CONSOLE") # Show console with debug information
 	else()
-		# set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mwindows")
-		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mconsole")
+		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS") # Disable console appearence
 	endif()
-	
-	# Set the Freetype directory manually
-	# Change all of these three path to the correct depending on where FreeType BUILD on your Windows OS machine
-	set(Freetype_DIR "${CMAKE_SOURCE_DIR}/third_party/freetype")
-	set(FREETYPE_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/third_party/freetype/include")
-	# include_directories("L:/freetype-2.13.0-win64/include/freetype2")
-	set(FREETYPE_LIBRARY "${CMAKE_SOURCE_DIR}/third_party/freetype/bin")
+else()
+	# set(DFLAGS "-mconsole")
+	# set(RFLAGS "-mwindows")
+	# generator_flag(${DFLAGS} ${RFLAGS})
+	if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mconsole") # Show console with debug information
+	else()
+		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mwindows") # Disable console appearence
+	endif()
+
+	message("CMAKE_EXE_LINKER_FLAGS: " "${CMAKE_EXE_LINKER_FLAGS}.")
 endif()
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-# Find the Freetype package
-# find_package(Freetype REQUIRED)
-
 include(FetchContent)
 set(FETCHCONTENT_QUIET FALSE) # To allow cmake print intermidiate comments
-	
+
 FetchContent_Declare(
 	SDL2
-    GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-	# GIT_REPOSITORY git@github.com:libsdl-org/SDL.git
-    GIT_TAG release-2.26.5
-    # GIT_TAG SDL2
+	GIT_REPOSITORY https://github.com/libsdl-org/SDL.git # GIT_REPOSITORY git@github.com:libsdl-org/SDL.git
+	GIT_TAG release-2.26.5
 )
 FetchContent_MakeAvailable(SDL2)
 
 FetchContent_Declare(
 	SDL2_ttf
-	GIT_REPOSITORY https://github.com/libsdl-org/SDL_ttf.git
-	# GIT_REPOSITORY git@github.com:libsdl-org/SDL_ttf.git
-	# GIT_TAG        release-2.20.2 # replace with the version you want to use
-	
-	# Only this tag work when use SDL2 library, for some reason
-	GIT_TAG       SDL2 # Gives you SDL2_ttf 2.21.0
+	GIT_REPOSITORY https://github.com/libsdl-org/SDL_ttf.git # GIT_REPOSITORY git@github.com:libsdl-org/SDL_ttf.git
+	GIT_TAG SDL2 # Only this tag work when use SDL2 library, for some reason; Gives you SDL2_ttf 2.21.0
 )
 FetchContent_MakeAvailable(SDL2_ttf)
 
 FetchContent_Declare(
-	SDL2_image
-	# URL "https://www.libsdl.org/projects/SDL_image/release/SDL2_image-2.6.3.tar.gz" # replace x.x.x with the version you want to download
-	GIT_REPOSITORY https://github.com/libsdl-org/SDL_image.git
-	# GIT_REPOSITORY git@github.com/libsdl-org/SDL_image.git
-	# GIT_TAG        release-2.6.x # replace with the version you want to use
-	GIT_TAG       SDL2 # Gives you SDL2_image 2.7.0
+	SDL2_image # URL "https://www.libsdl.org/projects/SDL_image/release/SDL2_image-2.6.3.tar.gz" # replace x.x.x with the version you want to download
+	GIT_REPOSITORY https://github.com/libsdl-org/SDL_image.git # GIT_REPOSITORY git@github.com/libsdl-org/SDL_image.git
+	GIT_TAG SDL2 # Only this tag work when use SDL2 library, for some reason; Gives you SDL2_image 2.7.0
 )
 FetchContent_MakeAvailable(SDL2_image)
-
-# SDL2 library for fonts
-# if(WIN32)
-
-# set(SDL_TTF_DIR "${CMAKE_SOURCE_DIR}/third_party/SDL2_ttf-2.20.2_VC")
-# set(SDL_TTF_LIBRARIES "${CMAKE_SOURCE_DIR}/third_party/SDL2_ttf-2.20.2_VC/lib/x86")
-# set(SDL_TTF_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/third_party/SDL2_ttf-2.20.2_VC/include")
-# find_package(SDL_ttf REQUIRED)
-
-# else()
-
-# endif()
-
-# message("FOUND DIRECTORY FOR SDL2_ttf: " "${SDL2_TTF_INCLUDE_DIRS}")
 
 # Actual usage will be kept for every target in the separate file
 # 'targets' - all targets here
@@ -85,6 +70,7 @@ FetchContent_MakeAvailable(SDL2_image)
 # Let's keep features that we will freq. re-compile and add there something
 # also explicitly telling that some features needs testing
 set(INCLUDES "${CMAKE_SOURCE_DIR}/tested_headers")
+
 # include_directories(${INCLUDES}) # don't include like this
 
 # Starting point for all libraries, every single of them will be added
@@ -100,13 +86,16 @@ set(UTILS "${LIBRARIES}/utilities")
 
 set(LIB_TYPE "SHARED")
 
-# include_directories(${UTILS})
+function(set_specific_definitions TARGET)
+	# target_compile_definitions(${TARGET} PRIVATE _CRT_SECURE_NO_WARNINGS)
+endfunction()
 
 # Create separate module for the arena projectile
 add_library(
 	arena
 	${LIB_TYPE}
 	${LIB_ARENA}/Arena.cpp
+	${LIB_ARENA}/Arena.hpp
 )
 target_include_directories(
 	arena
@@ -118,12 +107,16 @@ target_link_libraries(
 	PUBLIC SDL2::SDL2
 	PUBLIC SDL2_image::SDL2_image
 )
+set_specific_definitions(
+	arena
+)
 
 # Create separate module for the background projectile
 add_library(
 	background
 	${LIB_TYPE}
 	${LIB_BACK}/Background.cpp
+	${LIB_BACK}/Background.hpp
 )
 target_include_directories(
 	background
@@ -141,6 +134,7 @@ add_library(
 	wheel
 	${LIB_TYPE}
 	${LIB_WHEEL}/Wheel.cpp
+	${LIB_WHEEL}/Wheel.hpp
 )
 target_include_directories(
 	wheel
@@ -152,24 +146,28 @@ target_link_libraries(
 	PUBLIC SDL2::SDL2
 	PUBLIC SDL2_image::SDL2_image
 )
+set_specific_definitions(
+	wheel
+)
 
-# # Create separate module for the text widget projectile
+# Create separate module for the text widget projectile
 add_library(
 	textwidget
 	${LIB_TYPE}
 	${LIB_TWIDGET}/TextWidget.cpp
+	${LIB_TWIDGET}/TextWidget.hpp
 )
 target_include_directories(
 	textwidget
 	PRIVATE ${LIB_TWIDGET}
-	# PRIVATE ${SDL2_TTF_INCLUDE_DIRS}
-	# PRIVATE ${FREETYPE_INCLUDE_DIRS}
 )
 target_link_libraries(
 	textwidget
 	PUBLIC SDL2::SDL2
 	PUBLIC SDL2_ttf::SDL2_ttf
-	# PUBLIC "${SDL_TTF_LIBRARIES}/SDL2_ttf.lib"
+)
+set_specific_definitions(
+	textwidget
 )
 
 # Create separate module for the game application
@@ -177,6 +175,7 @@ add_library(
 	application
 	${LIB_TYPE}
 	${LIB_APPLICATION}/WheelGameApplication.cpp
+	${LIB_APPLICATION}/WheelGameApplication.hpp
 )
 target_include_directories(
 	application
@@ -186,8 +185,6 @@ target_include_directories(
 	PUBLIC ${LIB_WHEEL}
 	PUBLIC ${UTILS}
 	PUBLIC ${LIB_TWIDGET}
-	# PUBLIC ${SDL2_TTF_INCLUDE_DIRS}
-	# PUBLIC ${FREETYPE_INCLUDE_DIRS}
 )
 target_link_libraries(
 	application
@@ -196,114 +193,33 @@ target_link_libraries(
 	PUBLIC wheel
 	PUBLIC textwidget
 )
+set_specific_definitions(
+	application
+)
 
 # create executable
 add_executable(
 	sparkle
 	targets/sparkle.cpp
 )
+
 # linking all necessary libraries
 target_link_libraries(
 	sparkle
 	PRIVATE application
 )
+set_specific_definitions(
+	sparkle
+)
 
-# I would like to keep every target binary in it's own dir,
-# also DEBUG and RELEASE dir's inside them as well
-# 'executables' - all executables root
-
-# Define a function to set common target properties
-function(set_output_properties TARGET BUILD_TYPE) # BUILD_TYPE == DEBUG || RELEASE
-    set_target_properties(
-        ${TARGET}
-        PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY "../executables/${BUILD_TYPE}/sparkle"				# Binary
-        LIBRARY_OUTPUT_DIRECTORY "../executables/${BUILD_TYPE}/sparkle"				# Dynamic libraries
-        ARCHIVE_OUTPUT_DIRECTORY "../executables/${BUILD_TYPE}/sparkle/static_libs" # Static libraries
-    )
-	if(NOT EXISTS ../executables/${BUILD_TYPE}/sparkle/assets/)
-		add_custom_command(
-			TARGET sparkle POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E copy_directory
-			${CMAKE_SOURCE_DIR}/assets
-			$<TARGET_FILE_DIR:sparkle>/assets
-		)
-	endif()
-endfunction()
-
-# Specify where target binary will be saved
-if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-
-	set_output_properties(arena "DEBUG")
-	set_output_properties(background "DEBUG")
-	set_output_properties(wheel "DEBUG")
-	set_output_properties(textwidget "DEBUG")
-	set_output_properties(application "DEBUG")
-	set_output_properties(sparkle "DEBUG")
-	
-	if(WIN32)
-
-		add_custom_command(
-			TARGET sparkle POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different
-				"$<TARGET_FILE_DIR:SDL2::SDL2>/SDL2d.dll"
-				$<TARGET_FILE_DIR:sparkle>/"SDL2d.dll"
-		)
-		add_custom_command(
-			TARGET sparkle POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different
-				"$<TARGET_FILE_DIR:SDL2_image::SDL2_image>/SDL2_imaged.dll"
-				$<TARGET_FILE_DIR:sparkle>/"SDL2_imaged.dll"
-		)
-		add_custom_command(
-			TARGET sparkle POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different
-				"$<TARGET_FILE_DIR:SDL2_ttf::SDL2_ttf>/SDL2_ttfd.dll"
-				$<TARGET_FILE_DIR:sparkle>/"SDL2_ttfd.dll"
-		)
-
-	endif()
-
-else()
-
-	set_output_properties(arena "RELEASE")
-	set_output_properties(background "RELEASE")
-	set_output_properties(wheel "RELEASE")
-	set_output_properties(textwidget "RELEASE")
-	set_output_properties(application "RELEASE")
-	set_output_properties(sparkle "RELEASE")
-
-	if(WIN32)
-
-		add_custom_command(
-			TARGET sparkle POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different
-				"$<TARGET_FILE_DIR:SDL2::SDL2>/SDL2.dll"
-				$<TARGET_FILE_DIR:sparkle>/"SDL2.dll"
-		)
-		add_custom_command(
-			TARGET sparkle POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different
-				"$<TARGET_FILE_DIR:SDL2_image::SDL2_image>/SDL2_image.dll"
-				$<TARGET_FILE_DIR:sparkle>/"SDL2_image.dll"
-		)
-		add_custom_command(
-			TARGET sparkle POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different
-				"$<TARGET_FILE_DIR:SDL2_ttf::SDL2_ttf>/SDL2_ttf.dll"
-				$<TARGET_FILE_DIR:sparkle>/"SDL2_ttf.dll"
-		)
-
-	endif()
-
-endif()
-
-if (CMAKE_GENERATOR MATCHES "Visual Studio .*")
+if(CMAKE_GENERATOR MATCHES "Visual Studio .*")
 	target_compile_options(
 		sparkle
 		PRIVATE
 		/W3
-		/_CRT_SECURE_NO_WARNINGS
+		/Wall
+		/O1 # Creates small code.
+		/GA # Optimizes for Windows applications
 	)
 else()
 	target_compile_options(
@@ -314,4 +230,68 @@ else()
 		-Wpedantic
 		-Wconversion
 	)
+endif()
+
+# I would like to keep every target binary in it's own dir,
+# also DEBUG and RELEASE dir's inside them as well
+# 'executables' - all executables root
+
+# Define a function to set common target properties
+function(set_output_properties TARGET) # BUILD_TYPE == DEBUG || RELEASE
+	set(COMMON_FOLDER "../executables/${CMAKE_BUILD_TYPE}/sparkle")
+
+	set_target_properties(
+		${TARGET}
+		PROPERTIES
+		RUNTIME_OUTPUT_DIRECTORY "${COMMON_FOLDER}" # Binary
+		LIBRARY_OUTPUT_DIRECTORY "${COMMON_FOLDER}" # Dynamic libraries
+		ARCHIVE_OUTPUT_DIRECTORY "${COMMON_FOLDER}" # Static libraries
+	)
+endfunction()
+
+function(set_properties_for_all)
+	#
+	set_output_properties(arena)
+	set_output_properties(background)
+	set_output_properties(wheel)
+	set_output_properties(textwidget)
+	set_output_properties(application)
+	set_output_properties(sparkle)
+
+	# Take assets with them
+	if(NOT EXISTS ../executables/${CMAKE_BUILD_TYPE}/sparkle/assets/)
+		add_custom_command(
+			TARGET sparkle POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy_directory
+			${CMAKE_SOURCE_DIR}/assets
+			$<TARGET_FILE_DIR:sparkle>/assets
+		)
+	endif()
+endfunction()
+
+# Specify where target binary will be saved
+set_properties_for_all(${CMAKE_BUILD_TYPE})
+
+#
+if(WIN32) # ! Why Linux don't need it?
+	# Define function to copy DLL's on Windows
+	function(copy_dll TARGET MODULE)
+		# set(POSTFIX_DLL_NAME "")
+		if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+			set(POSTFIX_DLL_NAME "d") # set to 'd' when Debug
+		else()
+			set(POSTFIX_DLL_NAME "")
+		endif()
+
+		add_custom_command(
+			TARGET ${TARGET} POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			"$<TARGET_FILE_DIR:${MODULE}::${MODULE}>/${MODULE}${POSTFIX_DLL_NAME}.dll"
+			$<TARGET_FILE_DIR:${TARGET}>/"${MODULE}${POSTFIX_DLL_NAME}.dll"
+		)
+	endfunction()
+
+	copy_dll(sparkle SDL2)
+	copy_dll(sparkle SDL2_image)
+	copy_dll(sparkle SDL2_ttf)
 endif()

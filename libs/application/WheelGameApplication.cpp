@@ -14,10 +14,10 @@ WheelGameApplication::WheelGameApplication(int argc, char* argv[])
 	_gRect.h = _appHeight;
 
 	// Create the main window
-	_gWindow = SDL_CreateWindow(				   //
-		"Sparkling joy...",						   //
-		_gRect.x, _gRect.y, _gRect.w, _gRect.h,	   //
-		SDL_WINDOW_SHOWN						   //
+	_gWindow = SDL_CreateWindow(							//
+		"Sparcles game. Dimmak productions, june 2023.",	//
+		_gRect.x, _gRect.y, _gRect.w, _gRect.h,				//
+		SDL_WINDOW_SHOWN									//
 	);
 
 	// Check if window creation were succsessfull
@@ -49,6 +49,9 @@ WheelGameApplication::WheelGameApplication(int argc, char* argv[])
 	// build wheel with initial size
 	_wheel = new Wheel(_gRenderer, WUtils::_wheel._width, WUtils::_wheel._height);
 
+	//
+	_bubble = new Bubble(_gRenderer, WUtils::_bubbleRadius);
+
 	// build fps screen text
 	_fpsScreen = new TextWidget(_gRenderer);
 	// build fps screen text
@@ -62,7 +65,9 @@ WheelGameApplication::~WheelGameApplication()
 	SDL_DestroyWindow(_gWindow);
 
 	// deallocate heap memory
+	delete _legend;
 	delete _fpsScreen;
+	delete _bubble;
 	delete _wheel;
 	delete _arena;
 	delete _background;
@@ -187,6 +192,19 @@ void WheelGameApplication::gamePlay()
 
 		// draw arena
 		_arena->draw();
+
+		//!>>>>BUBLE>>>>
+
+		// set bubble texture alpha mod
+		_bubble->setTextureAlphaMod();
+		// change bubble position
+		_bubble->implementMovement();
+		// clamp bubble movement direction
+		// this->clampObjects(_arena, _bubble);
+		// draw bubble
+		_bubble->draw();
+
+		//!<<<<BUBLE<<<<
 
 		// draw fps screen
 		_fpsScreen->draw();

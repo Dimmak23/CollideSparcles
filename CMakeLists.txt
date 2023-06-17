@@ -81,6 +81,7 @@ set(LIB_ARENA "${LIBRARIES}/arena")
 set(LIB_BACK "${LIBRARIES}/background")
 set(LIB_WHEEL "${LIBRARIES}/wheel")
 set(LIB_TWIDGET "${LIBRARIES}/textwidget")
+set(LIB_BUBBLE "${LIBRARIES}/bubble")
 set(LIB_APPLICATION "${LIBRARIES}/application")
 set(UTILS "${LIBRARIES}/utilities")
 
@@ -170,6 +171,27 @@ set_specific_definitions(
 	textwidget
 )
 
+# Create separate module for the bubble projectile
+add_library(
+	bubble
+	${LIB_TYPE}
+	${LIB_BUBBLE}/Bubble.cpp
+	${LIB_BUBBLE}/Bubble.hpp
+)
+target_include_directories(
+	bubble
+	PRIVATE ${LIB_BUBBLE}
+	PUBLIC ${UTILS}
+)
+target_link_libraries(
+	bubble
+	PUBLIC SDL2::SDL2
+	PUBLIC SDL2_image::SDL2_image
+)
+set_specific_definitions(
+	bubble
+)
+
 # Create separate module for the game application
 add_library(
 	application
@@ -183,8 +205,9 @@ target_include_directories(
 	PUBLIC ${LIB_ARENA}
 	PUBLIC ${LIB_BACK}
 	PUBLIC ${LIB_WHEEL}
-	PUBLIC ${UTILS}
 	PUBLIC ${LIB_TWIDGET}
+	PUBLIC ${LIB_BUBBLE}
+	PUBLIC ${UTILS}
 )
 target_link_libraries(
 	application
@@ -192,6 +215,7 @@ target_link_libraries(
 	PUBLIC background
 	PUBLIC wheel
 	PUBLIC textwidget
+	PUBLIC bubble
 )
 set_specific_definitions(
 	application
@@ -257,6 +281,7 @@ function(set_properties_for_all)
 	set_output_properties(background)
 	set_output_properties(wheel)
 	set_output_properties(textwidget)
+	set_output_properties(bubble)
 	set_output_properties(application)
 	set_output_properties(sparcle)
 

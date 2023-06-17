@@ -14,51 +14,31 @@
 
 #include "WheelUtils.hpp"
 
-enum Direction
-{
-	RIGHT = 0,
-	DOWN,
-	LEFT,
-	UP
-};
+// enum Direction
+// {
+// 	RIGHT = 0,
+// 	DOWN,
+// 	LEFT,
+// 	UP
+// };
 
-class Wheel
+class Bubble
 {
 public:
-	Wheel(SDL_Renderer* parent, unsigned int width, unsigned int height);
-	~Wheel();
-
-	// setters
-	void changeOpacity();
-	void clampOpacity();
-
-	void implementMovement();
-	void setMoveDelta(const Direction& flow);
-	void bounce(const int& coordinate, const Direction& flow);
-	void adjustPosition(const int& addX, const int& addY);
-
-	void changeRotation(const double& value);
-	void clampRotation();
+	Bubble(SDL_Renderer* parent, unsigned int radius);
+	~Bubble();
 
 	void setThick(const char& value);
-
-	// getters
-	int rightSide() const;
-	int downSide() const;
-	int leftSide() const;
-	int upSide() const;
+	void implementMovement();
 
 	// graphics
 	void setTextureAlphaMod();
 	int draw();
 
-	// debugging
-	void debug_data();
-
 private:
 	// let's deprecate copying background object
-	Wheel(const Wheel&) = delete;
-	Wheel operator=(const Wheel&) = delete;
+	Bubble(const Bubble&) = delete;
+	Bubble operator=(const Bubble&) = delete;
 
 	SDL_Renderer* _parent{ nullptr };
 	SDL_Texture* _texture{ nullptr };
@@ -68,7 +48,7 @@ private:
 	struct CRectangle
 	{
 		// makes our live easier
-		CRectangle& operator+=(const Wheel::MoveDeltas& deltas);
+		CRectangle& operator+=(const Bubble::MoveDeltas& deltas);
 
 		// setters
 		void set(const int& x, const int& y, const int& w, const int& h);
@@ -94,7 +74,7 @@ private:
 			_Y = Y;
 		}
 		void debug_data() const;
-		friend struct Wheel::CRectangle;
+		friend struct Bubble::CRectangle;
 
 	private:
 		char _X{};
@@ -103,10 +83,8 @@ private:
 
 	// We need destination rectangle
 	CRectangle _rectangle;
-
-	// Wheel center point
-	SDL_Point _wheelCenter;
-
+	// Bubble center point
+	SDL_Point _bubbleCenter;
 	// position
 	MoveDeltas _delta;
 	// rotation

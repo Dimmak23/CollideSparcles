@@ -9,7 +9,7 @@ Wheel::Wheel(SDL_Renderer* parent, unsigned int width, unsigned int height)
 	_parent = parent;
 
 	// implement parsed size for wheel
-	_rectangle.set(10, 10, width, height);
+	_rectangle.set(0, 0, width, height);
 
 	// assign center of the wheel
 	_wheelCenter = _rectangle.getCenterPoint();
@@ -20,12 +20,10 @@ Wheel::Wheel(SDL_Renderer* parent, unsigned int width, unsigned int height)
 
 	if (tempSurface == nullptr)
 	{
-		std::cout << "Lighter surface could not be created! SDL Error: " << SDL_GetError() << std::endl;
+		std::cout << "'Wheel'' surface could not be created! SDL Error: " << SDL_GetError() << std::endl;
 	}
 	else
 	{
-		// SDL_SetColorKey(tempSurface, SDL_TRUE, SDL_MapRGB(surface->format, 255, 255, 255));
-
 		// Create a texture from the surface
 		_texture = SDL_CreateTextureFromSurface(_parent, tempSurface);
 		SDL_FreeSurface(tempSurface);
@@ -49,6 +47,7 @@ Wheel::~Wheel()
 void Wheel::setTextureAlphaMod()
 {
 	// std::cout << "change alpha mode: " << SDL_SetTextureAlphaMod(_texture, _opacity) << std::endl;
+	// Returns 0 on success or a negative error code on failure; call SDL_GetError() for more information.
 	SDL_SetTextureAlphaMod(_texture, _opacity);
 }
 
@@ -137,6 +136,7 @@ void Wheel::setThick(const char& value)
 
 int Wheel::draw()
 {
+	// Returns 0 on success or a negative error code on failure; call SDL_GetError() for more information.
 	return SDL_RenderCopyEx(_parent,					   //
 							_texture,					   //
 							nullptr, &_rectangle._rect,	   //

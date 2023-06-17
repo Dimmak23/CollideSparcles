@@ -2,6 +2,7 @@
 
 #include "Arena.hpp"
 #include "Background.hpp"
+#include "Bubble.hpp"
 #include "TextWidget.hpp"
 #include "Wheel.hpp"
 
@@ -40,6 +41,7 @@ private:
 	Background* _background{ nullptr };
 	Arena* _arena{ nullptr };
 	Wheel* _wheel{ nullptr };
+	Bubble* _bubble{ nullptr };
 
 	//
 	TextWidget* _fpsScreen{ nullptr };

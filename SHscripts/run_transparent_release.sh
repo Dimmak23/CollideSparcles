@@ -1,1 +1,0 @@
-./executables/RELEASE/transparent/transparent

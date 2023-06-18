@@ -1,1 +1,0 @@
-./executables/DEBUG/back_tr/back_tr

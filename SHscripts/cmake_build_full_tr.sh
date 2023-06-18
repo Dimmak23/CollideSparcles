@@ -1,1 +1,0 @@
-cmake --build build --target full_tr -j 8

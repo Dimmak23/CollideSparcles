@@ -17,25 +17,26 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # endif()
 # endfunction()
 
-# if(NOT UNIX AND NOT CMAKE_MACOSX_BUNDLE) # ! What about Linux?
-if(CMAKE_GENERATOR MATCHES "Visual Studio .*")
-	# generator_flag("/SUBSYSTEM:CONSOLE" "/SUBSYSTEM:WINDOWS")
-	if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:CONSOLE") # Show console with debug information
+if(NOT UNIX AND NOT MACOSX_BUNDLE) # ! What about Linux?
+	if(CMAKE_GENERATOR MATCHES "Visual Studio .*")
+		# generator_flag("/SUBSYSTEM:CONSOLE" "/SUBSYSTEM:WINDOWS")
+		if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+			set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:CONSOLE") # Show console with debug information
+		else()
+			set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS") # Disable console appearence
+		endif()
 	else()
-		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS") # Disable console appearence
-	endif()
-else()
-	# set(DFLAGS "-mconsole")
-	# set(RFLAGS "-mwindows")
-	# generator_flag(${DFLAGS} ${RFLAGS})
-	if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mconsole") # Show console with debug information
-	else()
-		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mwindows") # Disable console appearence
-	endif()
+		# set(DFLAGS "-mconsole")
+		# set(RFLAGS "-mwindows")
+		# generator_flag(${DFLAGS} ${RFLAGS})
+		if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+			set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mconsole") # Show console with debug information
+		else()
+			set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mwindows") # Disable console appearence
+		endif()
 
-	message("CMAKE_EXE_LINKER_FLAGS: " "${CMAKE_EXE_LINKER_FLAGS}.")
+		message("CMAKE_EXE_LINKER_FLAGS: " "${CMAKE_EXE_LINKER_FLAGS}.")
+	endif()
 endif()
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
@@ -262,7 +263,7 @@ endif()
 # also DEBUG and RELEASE dir's inside them as well
 # 'executables' - all executables root
 
-# Define a function to set common target properties
+# # Define a function to set common target properties
 function(set_output_properties TARGET) # BUILD_TYPE == DEBUG || RELEASE
 	set(COMMON_FOLDER "../executables/${CMAKE_BUILD_TYPE}/${MAIN}")
 
@@ -276,7 +277,7 @@ function(set_output_properties TARGET) # BUILD_TYPE == DEBUG || RELEASE
 endfunction()
 
 function(set_properties_for_all)
-	#
+
 	set_output_properties(arena)
 	set_output_properties(background)
 	set_output_properties(wheel)
@@ -296,11 +297,13 @@ function(set_properties_for_all)
 	endif()
 endfunction()
 
-# Specify where target binary will be saved
+# # Specify where target binary will be saved
 set_properties_for_all(${CMAKE_BUILD_TYPE})
 
 #
 if(WIN32) # ! Why Linux don't need it?
+	set(EXTENSION_NAME "dll")
+
 	# Define function to copy DLL's on Windows
 	function(copy_dll TARGET MODULE)
 		# set(POSTFIX_DLL_NAME "")
@@ -313,12 +316,13 @@ if(WIN32) # ! Why Linux don't need it?
 		add_custom_command(
 			TARGET ${TARGET} POST_BUILD
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different
-			"$<TARGET_FILE_DIR:${MODULE}::${MODULE}>/${MODULE}${POSTFIX_DLL_NAME}.dll"
-			$<TARGET_FILE_DIR:${TARGET}>/"${MODULE}${POSTFIX_DLL_NAME}.dll"
+			"$<TARGET_FILE_DIR:${MODULE}::${MODULE}>/${PREFIX}${MODULE}${POSTFIX_DLL_NAME}.${EXTENSION_NAME}"
+			$<TARGET_FILE_DIR:${TARGET}>/"${PREFIX}${MODULE}${POSTFIX_DLL_NAME}.${EXTENSION_NAME}"
 		)
 	endfunction()
 
 	copy_dll(sparcle SDL2)
 	copy_dll(sparcle SDL2_image)
 	copy_dll(sparcle SDL2_ttf)
+
 endif()

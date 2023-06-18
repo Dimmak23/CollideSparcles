@@ -1,1 +1,0 @@
-executables/RELEASE/sparkle/sparkle

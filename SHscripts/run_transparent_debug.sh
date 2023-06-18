@@ -1,1 +1,0 @@
-./executables/DEBUG/transparent/transparent

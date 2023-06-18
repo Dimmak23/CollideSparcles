@@ -1,1 +1,0 @@
-cmake --build build --target render_test -j 8

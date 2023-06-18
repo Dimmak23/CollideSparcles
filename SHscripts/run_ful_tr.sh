@@ -1,1 +1,0 @@
-./executables/DEBUG/full_tr/full_tr

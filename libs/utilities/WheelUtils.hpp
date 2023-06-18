@@ -2,6 +2,18 @@
 
 #include <string>
 
+enum Direction
+{
+	RIGHT = 0,
+	DOWN,
+	LEFT,
+	UP,
+	DOWN_RIGHT,
+	DOWN_LEFT,
+	UP_RIGHT,
+	UP_LEFT
+};
+
 namespace WUtils
 {
 	static std::string _backgroundPath{ "assets/images/carbon-background.png" };
@@ -13,11 +25,12 @@ namespace WUtils
 
 	struct Size
 	{
+		Size(const unsigned int& x, const unsigned int& y) : _width(x), _height(y) {}
 		unsigned int _width;
 		unsigned int _height;
 	};
 
 	static Size _minArena{ 320, 240 };
-	static Size _wheel{ 100, 88 };
-	static unsigned int _bubbleRadius{ 12 };
+	static Size _wheel{ 100, 106 };
+	static unsigned int _bubbleRadius{ 9 };
 }	 // namespace WUtils

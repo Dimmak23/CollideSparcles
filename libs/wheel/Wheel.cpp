@@ -9,28 +9,55 @@ Wheel::Wheel(SDL_Renderer* parent, unsigned int width, unsigned int height)
 	_parent = parent;
 
 	// implement parsed size for wheel
-	_rectangle.set(0, 0, width, height);
+	_rectangle.set(40, 40, width, height);
+	_wheelRadius = width / 2;
 
 	// assign center of the wheel
 	_wheelCenter = _rectangle.getCenterPoint();
 
 	// Create a lighter surface from the '<?>.png'
-	SDL_Surface* tempSurface = nullptr;
-	tempSurface = IMG_Load(WUtils::_wheelPath.c_str());
+	SDL_Surface* originalSurface = nullptr;
+	originalSurface = IMG_Load(WUtils::_wheelPath.c_str());
 
-	if (tempSurface == nullptr)
+	if (originalSurface == nullptr)
 	{
-		std::cout << "'Wheel'' surface could not be created! SDL Error: " << SDL_GetError() << std::endl;
+		std::cout << "Original 'Wheel'' surface could not be created! SDL Error: " << SDL_GetError() << std::endl;
 	}
 	else
 	{
+		// Create cropped image
+		SDL_Surface* croppedSurface = SDL_CreateRGBSurface(	   //
+			0,												   //
+			570, 603,										   // resulted size
+			originalSurface->format->BitsPerPixel,			   //
+			originalSurface->format->Rmask,					   //
+			originalSurface->format->Gmask,					   //
+			originalSurface->format->Bmask,					   //
+			originalSurface->format->Amask					   //
+		);
+
+		// Clip original surface
+		SDL_Rect croppedRectangle;
+		croppedRectangle.x = 143;	 // X coordinate of the top-left corner of the cropped area
+		croppedRectangle.y = 61;	 // Y coordinate of the top-left corner of the cropped area
+		croppedRectangle.w = 570;	 // Width of the cropped area
+		croppedRectangle.h = 603;	 // Height of the cropped area
+
+		SDL_SetClipRect(originalSurface, &croppedRectangle);
+
+		SDL_BlitSurface(originalSurface, &croppedRectangle, croppedSurface, NULL);
+
+		SDL_FreeSurface(originalSurface);
+
 		// Create a texture from the surface
-		_texture = SDL_CreateTextureFromSurface(_parent, tempSurface);
-		SDL_FreeSurface(tempSurface);
+		_texture = SDL_CreateTextureFromSurface(_parent, croppedSurface);
+		SDL_FreeSurface(croppedSurface);
 	}
 
+	//! INITIAL MOVEMENT
+
 	// set to move by one pixel
-	this->setThick(1);
+	this->setThick(4);
 
 	// set to move right
 	_delta.set(_thick, 0);
@@ -77,8 +104,8 @@ void Wheel::CRectangle::setY(const int& value) { _rect.y = value; }
 SDL_Point Wheel::CRectangle::getCenterPoint() const
 {
 	SDL_Point temp;
-	temp.x = _rect.w / 2;
-	temp.y = _rect.h / 2;
+	temp.x = _rect.x + _rect.w / 2;
+	temp.y = _rect.y + _rect.w / 2;	   //! image umbalanced and fixed here
 	return temp;
 }
 
@@ -105,6 +132,12 @@ int Wheel::downSide() const { return _rectangle._rect.y + _rectangle._rect.h; }
 int Wheel::leftSide() const { return _rectangle._rect.x; }
 
 int Wheel::upSide() const { return _rectangle._rect.y; }
+
+const char& Wheel::getThick() const { return _thick; }
+
+float Wheel::collideRadius() const { return (float)_wheelRadius; }
+
+SDL_Point Wheel::collisionCenter() const { return _rectangle.getCenterPoint(); }
 
 void Wheel::clampOpacity()
 {
@@ -136,6 +169,7 @@ void Wheel::setThick(const char& value)
 
 int Wheel::draw()
 {
+	_wheelCenter = SDL_Point{ _rectangle.width() / 2, _rectangle.width() / 2 };
 	// Returns 0 on success or a negative error code on failure; call SDL_GetError() for more information.
 	return SDL_RenderCopyEx(_parent,					   //
 							_texture,					   //
@@ -212,5 +246,5 @@ void Wheel::adjustPosition(const int& addX, const int& addY)
 void Wheel::MoveDeltas::debug_data() const
 {
 	//
-	std::cout << "delta {" << (int)_X << ", " << (int)_Y << "}" << std::endl;
+	std::cout << "Wheel delta {" << (int)_X << ", " << (int)_Y << "}" << std::endl;
 }

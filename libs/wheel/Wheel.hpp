@@ -14,14 +14,6 @@
 
 #include "WheelUtils.hpp"
 
-enum Direction
-{
-	RIGHT = 0,
-	DOWN,
-	LEFT,
-	UP
-};
-
 class Wheel
 {
 public:
@@ -32,6 +24,7 @@ public:
 	void changeOpacity();
 	void clampOpacity();
 
+	// physics
 	void implementMovement();
 	void setMoveDelta(const Direction& flow);
 	void bounce(const int& coordinate, const Direction& flow);
@@ -47,6 +40,11 @@ public:
 	int downSide() const;
 	int leftSide() const;
 	int upSide() const;
+
+	const char& getThick() const;
+
+	float collideRadius() const;
+	SDL_Point collisionCenter() const;
 
 	// graphics
 	void setTextureAlphaMod();
@@ -106,6 +104,8 @@ private:
 
 	// Wheel center point
 	SDL_Point _wheelCenter;
+	// Wheel collides around it's center with some predefined radius
+	unsigned int _wheelRadius;
 
 	// position
 	MoveDeltas _delta;

@@ -1,5 +1,6 @@
 #include "WheelGameApplication.hpp"
 
+#include <cmath>
 #include <iostream>
 
 WheelGameApplication::WheelGameApplication(int argc, char* argv[])
@@ -50,7 +51,7 @@ WheelGameApplication::WheelGameApplication(int argc, char* argv[])
 	_wheel = new Wheel(_gRenderer, WUtils::_wheel._width, WUtils::_wheel._height);
 
 	//
-	_bubble = new Bubble(_gRenderer, WUtils::_bubbleRadius);
+	_bubble = new Bubble(_gRenderer, WUtils::_bubbleRadius, std::move(WUtils::Size(200, 200)));
 
 	// build fps screen text
 	_fpsScreen = new TextWidget(_gRenderer);
@@ -134,9 +135,9 @@ void WheelGameApplication::clampObjects(Arena* pArena, Wheel* pWheel)
 			pWheel->adjustPosition(1, 1);
 
 			if (pArena->moveWheelCW(20))
-				pWheel->setThick(1);
+				pWheel->setThick(4);
 			else
-				pWheel->setThick(-1);
+				pWheel->setThick(-4);
 
 			_firstTimeEnter = false;
 		}
@@ -147,15 +148,84 @@ void WheelGameApplication::clampObjects(Arena* pArena, Wheel* pWheel)
 	}
 }
 
+void WheelGameApplication::clampObjects(Arena* pArena, Bubble* pBubble)
+{
+	if (pBubble->rightSide() > pArena->rightSide())
+	{
+		pBubble->bounce(pArena->rightSide(), RIGHT);
+		// pBubble->setMoveDelta(DOWN);
+	}
+	else if (pBubble->downSide() > pArena->downSide())
+	{
+		pBubble->bounce(pArena->downSide(), DOWN);
+		// pBubble->setMoveDelta(LEFT);
+		// _firstTimeEnter = true;
+	}
+	else if (pBubble->leftSide() < pArena->leftSide())
+	{
+		pBubble->bounce(pArena->leftSide(), LEFT);
+		// pBubble->setMoveDelta(UP);
+	}
+	else if (pBubble->upSide() < pArena->upSide())
+	{
+		// if (_firstTimeEnter)
+		// {
+		// 	pBubble->adjustPosition(1, 1);
+
+		// 	if (pArena->moveWheelCW(20))
+		// 		pBubble->setThick(1);
+		// 	else
+		// 		pBubble->setThick(-1);
+
+		// 	_firstTimeEnter = false;
+		// }
+		pBubble->bounce(pArena->upSide(), UP);
+		// pBubble->setMoveDelta(RIGHT);
+	}
+}
+
+bool WheelGameApplication::IsColliding(Wheel* pWheel, Bubble* pBubble) const
+{
+	//
+	float distance = std::sqrt((pWheel->collisionCenter().x - pBubble->collisionCenter().x) *
+								   (pWheel->collisionCenter().x - pBubble->collisionCenter().x) +
+							   (pWheel->collisionCenter().y - pBubble->collisionCenter().y) *
+								   (pWheel->collisionCenter().y - pBubble->collisionCenter().y));
+	//
+	// std::cout << "pWheel->collisionCenter().x: " << pWheel->collisionCenter().x << '\n';
+	// std::cout << "pWheel->collisionCenter().y: " << pWheel->collisionCenter().y << '\n';
+	// std::cout << "pBubble->collisionCenter().x: " << pBubble->collisionCenter().x << '\n';
+	// std::cout << "pBubble->collisionCenter().y: " << pBubble->collisionCenter().y << '\n';
+
+	return ((pWheel->collideRadius() + pBubble->collideRadius()) > distance);
+}
+
+void WheelGameApplication::collideObjects(Wheel* pWheel, Bubble* pBubble)
+{
+	if (this->IsColliding(pWheel, pBubble))
+	{
+		//
+		int deltaCX = pWheel->collisionCenter().x - pBubble->collisionCenter().x;
+		int deltaCY = pWheel->collisionCenter().y - pBubble->collisionCenter().y;
+		float alpha = atanf((float)(deltaCY) / (float)(deltaCX));
+		int deltaRX = (pWheel->collideRadius() + pBubble->collideRadius()) * cosf(alpha);
+		int deltaRY = (pWheel->collideRadius() + pBubble->collideRadius()) * sinf(alpha);
+
+		SDL_Point newBubbleCenter{ pWheel->collisionCenter().x - deltaRX, pWheel->collisionCenter().y - deltaRY };
+		//
+		pBubble->bounce(newBubbleCenter);
+	}
+}
+
 void WheelGameApplication::gamePlay()
 {
 	_fpsScreen->setFont(WUtils::_FPSfont_pixel, 14);
 	_fpsScreen->setColor(std::move(SDL_Color{ 255, 12, 145 }));
 	_fpsScreen->setPostion(10, 10);
 
-	_legend->setFont(WUtils::_FPSfont_small, 14);
+	_legend->setFont(WUtils::_FPSfont_small, 18);
 	_legend->setColor(std::move(SDL_Color{ 52, 63, 255 }));
-	_legend->setPostion(10, _appHeight - 15);
+	_legend->setPostion(10, _appHeight - 20);
 	_legend->setMessage(std::move(std::string("DimmaK productions, june 2023.")));
 
 	// Event handling
@@ -197,10 +267,12 @@ void WheelGameApplication::gamePlay()
 
 		// set bubble texture alpha mod
 		_bubble->setTextureAlphaMod();
+		// clamp bubble movement direction
+		this->clampObjects(_arena, _bubble);
+		//
+		this->collideObjects(_wheel, _bubble);
 		// change bubble position
 		_bubble->implementMovement();
-		// clamp bubble movement direction
-		// this->clampObjects(_arena, _bubble);
 		// draw bubble
 		_bubble->draw();
 

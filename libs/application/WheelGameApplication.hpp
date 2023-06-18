@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include "Arena.hpp"
 #include "Background.hpp"
 #include "Bubble.hpp"
@@ -14,8 +16,16 @@ public:
 
 	// How we fork SDL framework
 	void initializeSDL();
+
 	// Need to keep wheel inside arena
 	void clampObjects(Arena* pArena, Wheel* pWheel);
+	//
+	void clampObjects(Arena* pArena, Bubble* pBubble);
+	//
+	bool IsColliding(Wheel* pWheel, Bubble* pBubble) const;
+	//
+	void collideObjects(Wheel* pWheel, Bubble* pBubble);
+
 	// Actual game behavior
 	void gamePlay();
 
@@ -42,6 +52,7 @@ private:
 	Arena* _arena{ nullptr };
 	Wheel* _wheel{ nullptr };
 	Bubble* _bubble{ nullptr };
+	std::vector<Bubble*> _sparcles;
 
 	//
 	TextWidget* _fpsScreen{ nullptr };

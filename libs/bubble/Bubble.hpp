@@ -14,22 +14,31 @@
 
 #include "WheelUtils.hpp"
 
-// enum Direction
-// {
-// 	RIGHT = 0,
-// 	DOWN,
-// 	LEFT,
-// 	UP
-// };
-
 class Bubble
 {
 public:
-	Bubble(SDL_Renderer* parent, unsigned int radius);
+	Bubble(SDL_Renderer* parent, unsigned int radius, WUtils::Size&& initialPosition);
 	~Bubble();
 
 	void setThick(const char& value);
 	void implementMovement();
+
+	// physics
+	void bounce(const int& coordinate, const Direction& flow);
+	void bounce(const SDL_Point& coordinate, const Direction& flow);
+	void bounce(const SDL_Point& coordinate);
+
+	// getters
+	int rightSide() const;
+	int downSide() const;
+	int leftSide() const;
+	int upSide() const;
+
+	float collideRadius() const;
+	SDL_Point collisionCenter() const;
+
+	const char& accelerationX() const;
+	const char& accelerationY() const;
 
 	// graphics
 	void setTextureAlphaMod();
@@ -54,6 +63,7 @@ private:
 		void set(const int& x, const int& y, const int& w, const int& h);
 		void setX(const int& value);
 		void setY(const int& value);
+		void setCenterPoint(const SDL_Point& point);
 
 		// getters
 		SDL_Point getCenterPoint() const;
@@ -68,11 +78,9 @@ private:
 
 	struct MoveDeltas
 	{
-		void set(const char& X, const char& Y)
-		{
-			_X = X;
-			_Y = Y;
-		}
+		void set(const char& X, const char& Y);
+		const char& getX() const;
+		const char& getY() const;
 		void debug_data() const;
 		friend struct Bubble::CRectangle;
 
@@ -85,6 +93,8 @@ private:
 	CRectangle _rectangle;
 	// Bubble center point
 	SDL_Point _bubbleCenter;
+	// Bubble collides around it's center with some predefined radius
+	unsigned int _bubbleRadius;
 	// position
 	MoveDeltas _delta;
 	// rotation

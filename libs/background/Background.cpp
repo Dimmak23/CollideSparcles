@@ -6,6 +6,7 @@ Background::Background(SDL_Renderer* parent, unsigned int width, unsigned int he
 {
 	// catch renderer
 	_parent = parent;
+
 	// implement parsed size for background
 	_rectangle.x = 0;
 	_rectangle.y = 0;

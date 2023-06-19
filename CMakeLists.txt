@@ -16,7 +16,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${RELEASE_FLAGS}") # Disable console appearence
 # endif()
 # endfunction()
-
 if(NOT UNIX AND NOT MACOSX_BUNDLE) # ! What about Linux?
 	if(CMAKE_GENERATOR MATCHES "Visual Studio .*")
 		# generator_flag("/SUBSYSTEM:CONSOLE" "/SUBSYSTEM:WINDOWS")
@@ -260,7 +259,7 @@ else()
 endif()
 
 # I would like to keep every target binary in it's own dir,
-# also DEBUG and RELEASE dir's inside them as well
+# also 'Debug' and 'Release' dir's inside them as well
 # 'executables' - all executables root
 
 # # Define a function to set common target properties
@@ -277,7 +276,6 @@ function(set_output_properties TARGET) # BUILD_TYPE == DEBUG || RELEASE
 endfunction()
 
 function(set_properties_for_all)
-
 	set_output_properties(arena)
 	set_output_properties(background)
 	set_output_properties(wheel)
@@ -303,9 +301,10 @@ set_properties_for_all(${CMAKE_BUILD_TYPE})
 #
 if(WIN32) # ! Why Linux don't need it?
 	set(EXTENSION_NAME "dll")
+	set(PREFIX "")
 
 	# Define function to copy DLL's on Windows
-	function(copy_dll TARGET MODULE)
+	function(copy_dll MODULE)
 		# set(POSTFIX_DLL_NAME "")
 		if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
 			set(POSTFIX_DLL_NAME "d") # set to 'd' when Debug
@@ -314,15 +313,14 @@ if(WIN32) # ! Why Linux don't need it?
 		endif()
 
 		add_custom_command(
-			TARGET ${TARGET} POST_BUILD
+			TARGET ${MAIN} POST_BUILD
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different
 			"$<TARGET_FILE_DIR:${MODULE}::${MODULE}>/${PREFIX}${MODULE}${POSTFIX_DLL_NAME}.${EXTENSION_NAME}"
-			$<TARGET_FILE_DIR:${TARGET}>/"${PREFIX}${MODULE}${POSTFIX_DLL_NAME}.${EXTENSION_NAME}"
+			$<TARGET_FILE_DIR:${MAIN}>/"${PREFIX}${MODULE}${POSTFIX_DLL_NAME}.${EXTENSION_NAME}"
 		)
 	endfunction()
 
-	copy_dll(sparcle SDL2)
-	copy_dll(sparcle SDL2_image)
-	copy_dll(sparcle SDL2_ttf)
-
+	copy_dll(SDL2)
+	copy_dll(SDL2_image)
+	copy_dll(SDL2_ttf)
 endif()

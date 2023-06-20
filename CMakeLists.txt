@@ -221,26 +221,26 @@ set_specific_definitions(
 	application
 )
 
+set(MAIN sparcle)
+
 # create executable
 add_executable(
-	sparcle
-	targets/sparcle.cpp
+	${MAIN}
+	targets/${MAIN}.cpp
 )
 
 # linking all necessary libraries
 target_link_libraries(
-	sparcle
+	${MAIN}
 	PRIVATE application
 )
 set_specific_definitions(
-	sparcle
+	${MAIN}
 )
-
-set(MAIN sparcle)
 
 if(CMAKE_GENERATOR MATCHES "Visual Studio .*")
 	target_compile_options(
-		sparcle
+		${MAIN}
 		PRIVATE
 		/W3
 		/Wall
@@ -249,7 +249,7 @@ if(CMAKE_GENERATOR MATCHES "Visual Studio .*")
 	)
 else()
 	target_compile_options(
-		sparcle
+		${MAIN}
 		PRIVATE
 		-Wall
 		-Wextra

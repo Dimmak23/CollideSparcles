@@ -14,6 +14,8 @@ enum Direction
 	UP_LEFT
 };
 
+//! Probably you don't whant have them as 'STATIC'
+
 namespace WUtils
 {
 	static std::string _backgroundPath{ "assets/images/carbon-background.png" };

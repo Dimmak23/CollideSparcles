@@ -34,13 +34,13 @@ Arena::~Arena()
 	delete _color;
 }
 
-int Arena::rightSide() const { return _rectangle.x + _rectangle.w; }
+unsigned int Arena::rightSide() const { return _rectangle.x + _rectangle.w; }
 
-int Arena::downSide() const { return _rectangle.y + _rectangle.h; }
+unsigned int Arena::downSide() const { return _rectangle.y + _rectangle.h; }
 
-int Arena::leftSide() const { return _rectangle.x; }
+unsigned int Arena::leftSide() const { return _rectangle.x; }
 
-int Arena::upSide() const { return _rectangle.y; }
+unsigned int Arena::upSide() const { return _rectangle.y; }
 
 bool Arena::moveWheelCW(const int& value)
 {

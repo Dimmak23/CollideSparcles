@@ -57,6 +57,9 @@ WheelGameApplication::WheelGameApplication(int argc, char* argv[])
 	_fpsScreen = new TextWidget(_gRenderer);
 	// build fps screen text
 	_legend = new TextWidget(_gRenderer);
+
+	//
+	_randomizer = new Randomizer();
 }
 
 WheelGameApplication::~WheelGameApplication()
@@ -266,15 +269,38 @@ void WheelGameApplication::gamePlay()
 		//!>>>>BUBLE>>>>
 
 		// set bubble texture alpha mod
-		_bubble->setTextureAlphaMod();
+		// _bubble->setTextureAlphaMod();
 		// clamp bubble movement direction
-		this->clampObjects(_arena, _bubble);
+		// this->clampObjects(_arena, _bubble);
 		//
-		this->collideObjects(_wheel, _bubble);
+		// this->collideObjects(_wheel, _bubble);
 		// change bubble position
-		_bubble->implementMovement();
+		// _bubble->implementMovement();
 		// draw bubble
-		_bubble->draw();
+		// _bubble->draw();
+		_counter++;
+		if (_counter > 50)
+		{
+			unsigned int posX{};
+			unsigned int posY{};
+			Point point;
+			unsigned int arenaLeftUpX{ _arena->leftSide() };
+			point = _randomizer->randomPoint(std::move(
+				RectangleArea{ _arena->leftSide(), _arena->upSide(), _arena->rightSide(), _arena->downSide() }));
+			_sparcles.push_back(
+				new Bubble(_gRenderer, WUtils::_bubbleRadius, std::move(WUtils::Size(point._X, point._Y))));
+			_counter = 0;
+		}
+
+		for (auto iterator = _sparcles.begin(); iterator < _sparcles.end(); iterator++)
+		{
+			Spawnable* spawn = *iterator;
+			spawn->setTextureAlphaMod();
+			this->clampObjects(_arena, *iterator);
+			this->collideObjects(_wheel, *iterator);
+			spawn->implementMovement();
+			spawn->draw();
+		}
 
 		//!<<<<BUBLE<<<<
 

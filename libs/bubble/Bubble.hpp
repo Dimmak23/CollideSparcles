@@ -12,9 +12,10 @@
 
 #endif
 
+#include "Spawnable.hpp"
 #include "WheelUtils.hpp"
 
-class Bubble
+class Bubble : public Spawnable
 {
 public:
 	Bubble(SDL_Renderer* parent, unsigned int radius, WUtils::Size&& initialPosition);

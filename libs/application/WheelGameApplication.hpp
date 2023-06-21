@@ -5,6 +5,7 @@
 #include "Arena.hpp"
 #include "Background.hpp"
 #include "Bubble.hpp"
+#include "Randomizer.hpp"
 #include "TextWidget.hpp"
 #include "Wheel.hpp"
 
@@ -53,6 +54,12 @@ private:
 	Wheel* _wheel{ nullptr };
 	Bubble* _bubble{ nullptr };
 	std::vector<Bubble*> _sparcles;
+
+	//
+	Randomizer* _randomizer{ nullptr };
+
+	//
+	unsigned int _counter{};
 
 	//
 	TextWidget* _fpsScreen{ nullptr };

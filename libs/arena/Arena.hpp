@@ -22,10 +22,10 @@ public:
 	Arena(SDL_Renderer* parent, unsigned int width, unsigned int height);
 	~Arena();
 
-	int rightSide() const;
-	int downSide() const;
-	int leftSide() const;
-	int upSide() const;
+	unsigned int rightSide() const;
+	unsigned int downSide() const;
+	unsigned int leftSide() const;
+	unsigned int upSide() const;
 
 	// returns 'true' - when arena size bigger from max envelope,
 	// 'false' - when smaller then min envelope

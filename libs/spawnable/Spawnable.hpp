@@ -3,5 +3,7 @@
 class Spawnable
 {
 public:
-	virtual void draw() {}
+	virtual int draw() {}
+	virtual void setTextureAlphaMod() {}
+	virtual void implementMovement() {}
 };

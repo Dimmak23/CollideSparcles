@@ -82,6 +82,8 @@ set(LIB_BACK "${LIBRARIES}/background")
 set(LIB_WHEEL "${LIBRARIES}/wheel")
 set(LIB_TWIDGET "${LIBRARIES}/textwidget")
 set(LIB_BUBBLE "${LIBRARIES}/bubble")
+set(LIB_RAND "${LIBRARIES}/randomizer")
+set(LIB_SPAWN "${LIBRARIES}/spawnable")
 set(LIB_APPLICATION "${LIBRARIES}/application")
 set(UTILS "${LIBRARIES}/utilities")
 
@@ -181,6 +183,7 @@ add_library(
 target_include_directories(
 	bubble
 	PRIVATE ${LIB_BUBBLE}
+	PRIVATE ${LIB_SPAWN}
 	PUBLIC ${UTILS}
 )
 target_link_libraries(
@@ -190,6 +193,28 @@ target_link_libraries(
 )
 set_specific_definitions(
 	bubble
+)
+
+# Create separate module for the randomizer module
+add_library(
+	randomizer
+	${LIB_TYPE}
+	${LIB_RAND}/Randomizer.cpp
+	${LIB_RAND}/Randomizer.hpp
+)
+target_include_directories(
+	randomizer
+	PRIVATE ${LIB_RAND}
+	PUBLIC ${UTILS}
+)
+
+# target_link_libraries(
+# bubble
+# PUBLIC SDL2::SDL2
+# PUBLIC SDL2_image::SDL2_image
+# )
+set_specific_definitions(
+	randomizer
 )
 
 # Create separate module for the game application
@@ -206,7 +231,9 @@ target_include_directories(
 	PUBLIC ${LIB_BACK}
 	PUBLIC ${LIB_WHEEL}
 	PUBLIC ${LIB_TWIDGET}
+	PUBLIC ${LIB_SPAWN}
 	PUBLIC ${LIB_BUBBLE}
+	PUBLIC ${LIB_RAND}
 	PUBLIC ${UTILS}
 )
 target_link_libraries(
@@ -216,6 +243,7 @@ target_link_libraries(
 	PUBLIC wheel
 	PUBLIC textwidget
 	PUBLIC bubble
+	PUBLIC randomizer
 )
 set_specific_definitions(
 	application
@@ -281,6 +309,7 @@ function(set_properties_for_all)
 	set_output_properties(wheel)
 	set_output_properties(textwidget)
 	set_output_properties(bubble)
+	set_output_properties(randomizer)
 	set_output_properties(application)
 	set_output_properties(sparcle)
 
